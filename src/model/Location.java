@@ -11,6 +11,7 @@ public class Location {
     private Retour retour; 
     private Client client;
     private Scooter scooter;
+    
 
     public Location(Client client, Scooter scooter, LocalDate dateDebut, LocalDate dateRetourPrevue) {
         if (client == null) {
@@ -22,7 +23,6 @@ public class Location {
         if (!scooter.isDisponible()) {
             throw new IllegalArgumentException("Le scooter est déjà en location.");
         }
-        // cette condition a revoir (jsp si je la fais ou nn / aussi avec le passe si on peut faire une location en passe ou non )
         if (dateDebut == null || dateDebut.isAfter(LocalDate.now())) {
             throw new IllegalArgumentException("La date de début ne peut pas être dans le futur.");
         }
@@ -43,6 +43,7 @@ public class Location {
     public int getId() {
         return id;
     }
+    
     public Client getClient() {
         return client;
     }
@@ -63,15 +64,8 @@ public class Location {
         return retour;
     }
 
-    public void setDateRetourPrevue(LocalDate dateRetourPrevue) {
-        if (dateRetourPrevue == null || dateRetourPrevue.isBefore(dateDebut)) {
-            throw new IllegalArgumentException("La date de retour prévue ne peut pas être avant la date de début.");
-        }
-        this.dateRetourPrevue = dateRetourPrevue;
-    }
 
     public void enregistrerRetour(double kmEffectue, LocalDate dateRetourEffective) {
-        // maybe la verification s'il existe deja un retour et on l'ecrase ou non !!
         if (dateRetourEffective == null || dateRetourEffective.isBefore(dateDebut)) {
             throw new IllegalArgumentException("La date de retour effective ne peut pas être avant la date de début.");
         }
@@ -85,6 +79,33 @@ public class Location {
         scooter.setDisponible(true);
     }
 
+
+    public double getPrixPinalite() {
+        if (retour == null || retour.getDateRetourEffective() == null) {
+            throw new IllegalStateException("Le retour doit être enregistré avant de calculer les pénalités.");
+        }
+    
+        if (retour.getDateRetourEffective().isAfter(dateRetourPrevue)) {
+            long nbrJ = ChronoUnit.DAYS.between(dateRetourPrevue, retour.getDateRetourEffective());
+            // le prix total de nbr du jours depasses *35%
+            double penalite = nbrJ * scooter.getPrixJour() * 0.35;
+            return (nbrJ * scooter.getPrixJour()) + penalite;
+        }
+        return 0;
+    }
+
+
+    // le prix total de la location
+    // ChronoUnit is an enumeration in the java.time.temporal package that provides a standard set of date and time units
+    public double getPrixLocation() {
+        if (retour == null) {
+            throw new IllegalStateException("Le retour n'a pas encore été enregistré.");
+        }
+
+        long nbrJours = ChronoUnit.DAYS.between(dateDebut, dateRetourPrevue);
+        return nbrJours * scooter.getPrixJour() + getPrixPinalite();
+    }
+
     public String toString() {
         return "LOCATION N°" + id + "\n" +
                "      - DATE DEBUT        : " + dateDebut + "\n" +
@@ -93,14 +114,5 @@ public class Location {
                "------------------------------------------------------";
     }
 
-    // le prix de la location
-    // ChronoUnit is an enumeration in the java.time.temporal package that provides a standard set of date and time units
-    public double getPrixLocation() {
-        // avoir si on calcul avec la date de retour prevue , apres on fais la mise a jour qu'on y aura le retour ou on laisse comme ca 
-        if (retour == null) {
-            throw new IllegalStateException("Le retour n'a pas encore été enregistré.");
-        }
-        long nbrJours = ChronoUnit.DAYS.between(dateDebut, retour.getDateRetourEffective());
-        return nbrJours * scooter.getPrixJour();
-    }
+  
 }

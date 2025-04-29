@@ -31,17 +31,17 @@ public class Categorie {
         }
         return false;
     }
-
-    public String getCategorie() {
-        return categorie;
-    }
-
     public void setCategorie(String categorie) {
-        if (!estCategorieValide(categorie)) {
+        if (categorie == null || !estCategorieValide(categorie)) {
             throw new IllegalArgumentException("Catégorie invalide.");
         }
         this.categorie = categorie;
     }
+
+    public String getCategorie() {
+        return categorie;
+    } 
+
 
     public void ajouterModele(Modele m) {
         if (m == null) {
@@ -51,7 +51,18 @@ public class Categorie {
             modeles.add(m);
         }
     }
+    public void retirerModele(Modele m) {
+        if (m == null) {
+            throw new IllegalArgumentException("Le modèle ne peut pas être null.");
+        }
+        if (!modeles.remove(m)) {
+            throw new IllegalArgumentException("Le modèle n'existe pas dans la liste.");
+        }
+    }
 
+    public void setModeles(Vector<Modele> mdl) {
+        this.modeles = mdl;
+    }
     public Vector<Modele> getModeles() {
         return new Vector<>(modeles);
     }
@@ -64,7 +75,18 @@ public class Categorie {
             clients.add(c);
         }
     }
+    public void retirerClient(Client c) {
+        if (c == null) {
+            throw new IllegalArgumentException("Le client ne peut pas être null.");
+        }
+        if (!clients.remove(c)) {
+            throw new IllegalArgumentException("Le client n'existe pas dans la liste.");
+        }
+    }
 
+    public void setClients(Vector<Client> clt) {
+        this.clients = clt;
+    }
     public Vector<Client> getClients() {
         return new Vector<>(clients);
     }

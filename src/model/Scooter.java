@@ -83,9 +83,17 @@ public class Scooter {
         return prix_Jour;
     }
 
-    public void setLocaiton(Vector<Location> loc) {
+    public void setLocation(Vector<Location> loc) {
         this.locations = loc;
     }
+    
+    public void ajouterLocation(Location location) {
+        if (location == null) {
+            throw new IllegalArgumentException("La location ne peut pas être null.");
+        }
+        locations.add(location);
+    }
+
     public Vector<Location> getLocations() {
         return new Vector<>(locations);
     }

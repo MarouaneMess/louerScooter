@@ -6,8 +6,8 @@ public class Modele {
     private String nom;
     private Marque marque;
     private int puissance; // en chevaux
-    private Vector<Categorie> listCategories; // Liste des catégories nécessaires
-    private Vector<Scooter> scooters; // Liste des scooters associés
+    private Vector<Categorie> listCategories; 
+    private Vector<Scooter> scooters; 
 
     public Modele(String nom, Marque marque, int puissance, Vector<Categorie> categories) {
         if (nom == null ) {
@@ -29,7 +29,7 @@ public class Modele {
         this.listCategories = new Vector<>();
         this.scooters = new Vector<>();
 
-        // Ajout du modèle à chaque catégorie et vice versa
+        //ajouter les modeles au categories et le contraire
         for (Categorie c : categories) {
             ajouterCategorie(c);
         }
@@ -37,13 +37,6 @@ public class Modele {
 
     public String getNom() {
         return nom;
-    }
-
-    public void setMarque(Marque marque) {
-        if (marque == null) {
-            throw new IllegalArgumentException("La marque ne peut pas être null.");
-        }
-        this.marque = marque;
     }
 
     public Marque getMarque() {
@@ -70,6 +63,16 @@ public class Modele {
             c.ajouterModele(this); // synchronisation inverse
         }
     }
+    public void retirerCategorie(Categorie c) {
+        if (c == null) {
+            throw new IllegalArgumentException("La catégorie ne peut pas être null.");
+        }
+        if (listCategories.remove(c)) {
+            c.getModeles().remove(this); // synchronisation inverse
+        } else {
+            throw new IllegalArgumentException("La catégorie n'existe pas dans la liste.");
+        }
+    }
 
     public Vector<Categorie> getCategories() {
         return new Vector<>(listCategories);
@@ -82,7 +85,7 @@ public class Modele {
 
         // Nettoyage ancien lien
         for (Categorie c : this.listCategories) {
-            c.getModeles().remove(this); // si tu gères bien ça dans Categorie, à vérifier
+            c.getModeles().remove(this); // pour supprimer le modele de chaque categorie 
         }
 
         this.listCategories = new Vector<>();
@@ -108,8 +111,15 @@ public class Modele {
         }
         this.scooters.add(s);
     }
+    public void retirerScooter(Scooter s) {
+        if (s == null) {
+            throw new IllegalArgumentException("Le scooter ne peut pas être null.");
+        }
+        if (!scooters.remove(s)) {
+            throw new IllegalArgumentException("Le scooter n'existe pas dans la liste.");
+        }
+    }
 
-    @Override
     public String toString() {
         return nom + "\n" +
                "          - MARQUE         : " + marque.getNom() + "\n" +

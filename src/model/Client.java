@@ -9,13 +9,16 @@ public class Client {
     private String prenom;
     private LocalDate date_naissance;
     private String adresse;
+    private Parc parc; 
     private Vector<Categorie> listCategories;
     private Vector<Location> locations;
-    private Parc parc; 
 
-    public Client(int numPermis,String nom, String prenom, LocalDate date_naissance, String adresse, Vector <Categorie> categories ) {
+    public Client(Parc parc,int numPermis,String nom, String prenom, LocalDate date_naissance, String adresse, Vector <Categorie> categories ) {
+        if (parc == null){
+            throw new IllegalArgumentException ("Le parc doit etre defini.");
+        }
         if (numPermis<=0) {
-            throw new IllegalArgumentException("le numero du permis est invalide.");
+            throw new IllegalArgumentException("Le numero du permis est invalide.");
         }
         if (nom == null ) {
             throw new IllegalArgumentException("Le nom ne peut pas être vide.");
@@ -30,6 +33,7 @@ public class Client {
             throw new IllegalArgumentException("L'adresse ne peut pas être vide.");
         }
 
+        this.parc=parc;
         this.numPermis=numPermis;
         this.nom = nom;
         this.prenom = prenom;
@@ -39,8 +43,17 @@ public class Client {
         this.locations = new Vector<>();
     }
 
+    public void setNumPermis(int numP){
+        this.numPermis=numP;
+    }
     public int getNumPermis() {
         return numPermis;
+    }
+    public void setParc(Parc parc){
+        this.parc = parc;
+    }
+    public Parc getParc(){
+        return parc;
     }
 
     public void setNom(String nom) {
@@ -91,33 +104,55 @@ public class Client {
         return adresse;
     }
 
-   
-
     public void ajouterCategorie(Categorie c) {
         if (c == null) {
             throw new IllegalArgumentException("La catégorie ne peut pas être null.");
         }
         if (!listCategories.contains(c)) {
             listCategories.add(c);
+            c.ajouterClient(this); // synchronisation inverse
         }
+    }
+
+    public void retirerCategorie(Categorie c) {
+        if (c == null) {
+            throw new IllegalArgumentException("La catégorie ne peut pas être null.");
+        }
+        if (listCategories.remove(c)) {
+            c.retirerClient(this); // synchronisation inverse
+        } else {
+            throw new IllegalArgumentException("La catégorie n'existe pas dans la liste.");
+        }
+    }
+    public void setCategories(Vector<Categorie> categories) {
+        if (categories==null){
+            throw new IllegalArgumentException ("La liste des categories doivent etre definies");
+        }
+        this.listCategories =categories;
     }
 
     public Vector<Categorie> getCategories() {
         return new Vector<>(listCategories);
     }
 
-    public void setCategories(Vector<Categorie> categories) {
-        this.listCategories = (categories != null) ? new Vector<>(categories) : new Vector<>();
-    }
 
-
-    public void setLocations(Vector<Location> locs) {
-        this.locations = (locs != null) ? new Vector<>(locs) : new Vector<>();
+    public void setLocation(Vector<Location> loc) {
+        if (loc==null){
+            throw new IllegalArgumentException ("La liste des categories doivent etre definies");
+        }
+        this.locations = loc;
     }
 
     public Vector<Location> getLocations() {
         return new Vector<>(locations); //une copie pour eviter la modification de l'origin
     }
+    public void ajouterLocation(Location location) {
+        if (location == null) {
+            throw new IllegalArgumentException("La location ne peut pas être null.");
+        }
+        locations.add(location);
+    }
+
 
     public String toString() {
         return "CLIENT N°" + numPermis + "\n" +
