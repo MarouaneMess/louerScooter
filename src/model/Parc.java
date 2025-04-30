@@ -71,6 +71,7 @@ public class Parc {
         return marques;
     }
 
+
     public void ajouterScooter(Scooter scooter) {
         if (scooter == null) {
             throw new IllegalArgumentException("Le scooter ne peut pas être null.");
