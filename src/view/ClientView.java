@@ -1,22 +1,23 @@
 package view;
+
 import model.*;
 import controller.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.text.NumberFormat;
 import java.util.Vector;
+
 import javax.swing.table.DefaultTableModel;
 
-
-public class ScooterView extends JFrame {
-    private Parc parc;
-    private JTable scooterTable;
+public class ClientView extends JFrame {
+    private JTable clientTable;
     private JScrollPane scrollPane;
     private JButton addButton, editButton, deleteButton;
     private JTextField searchField;
     private DefaultTableModel tableModel;
-    private ScooterController controller;
-
+    private ClientController controller;
+    private Parc parc;
 
     // Couleurs et polices
     private static final Color PRIMARY_COLOR = new Color(63, 81, 181);
@@ -24,14 +25,16 @@ public class ScooterView extends JFrame {
     private static final Font TITLE_FONT = new Font("Segoe UI", Font.BOLD, 24);
     private static final Font BUTTON_FONT = new Font("Segoe UI", Font.PLAIN, 14);
 
-    public ScooterView(Parc parc) {
+    public ClientView(Parc parc) {
         this.parc = parc;
         initializeUI();
-        controller = new ScooterController(this, parc);
+        controller = new ClientController(this, parc);
+        updateClientTable(parc.getClients());
     }
 
+
     private void initializeUI() {
-        setTitle("Gestion des Scooters");
+        setTitle("Gestion des Clients");
         setSize(1000, 600);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -45,8 +48,8 @@ public class ScooterView extends JFrame {
         // En-tête
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBackground(BACKGROUND_COLOR);
-        
-        JLabel titleLabel = new JLabel("Gestion des Scooters");
+
+        JLabel titleLabel = new JLabel("Gestion des Clients");
         titleLabel.setFont(TITLE_FONT);
         titleLabel.setForeground(PRIMARY_COLOR);
         headerPanel.add(titleLabel, BorderLayout.WEST);
@@ -55,24 +58,27 @@ public class ScooterView extends JFrame {
         JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         searchPanel.setBackground(BACKGROUND_COLOR);
         searchField = new JTextField(20);
+        
+       
+        
         searchField.setPreferredSize(new Dimension(200, 30));
         JButton searchButton = createStyledButton("Rechercher");
         searchPanel.add(searchField);
         searchPanel.add(searchButton);
         headerPanel.add(searchPanel, BorderLayout.EAST);
 
-        // Table des scooters
-        String[] columns = {"ID", "Modèle", "Année", "Kilométrage", "Prix/Jour", "Disponible", "Parc"};
+        // Table des clients
+        String[] columns = {"Num. Permis", "Nom", "Prénom", "Date de Naissance", "Âge", "Adresse", "Parc"};
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
-        scooterTable = new JTable(tableModel);
-        scooterTable.setRowHeight(30);
-        scooterTable.getTableHeader().setFont(BUTTON_FONT);
-        scrollPane = new JScrollPane(scooterTable);
+        clientTable = new JTable(tableModel);
+        clientTable.setRowHeight(30);
+        clientTable.getTableHeader().setFont(BUTTON_FONT);
+        scrollPane = new JScrollPane(clientTable);
         scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
 
         // Panel des boutons
@@ -91,10 +97,30 @@ public class ScooterView extends JFrame {
         mainPanel.add(buttonPanel, BorderLayout.SOUTH);
 
         // Ajout des listeners
-        addButton.addActionListener(e -> controller.showAddDialog());
+       addButton.addActionListener(e -> controller.showAddDialog());
         editButton.addActionListener(e -> controller.showEditDialog());
-        deleteButton.addActionListener(e -> controller.deleteScooter());
-        searchButton.addActionListener(e -> controller.searchScooters(searchField.getText()));
+        deleteButton.addActionListener(e -> controller.deleteClient());
+       
+
+        searchButton.addActionListener(e -> {
+            try {
+                String searchText = searchField.getText().trim();
+
+                // Si le champ de recherche est vide, on affiche tous les clients
+                if (searchText.isEmpty()) {
+                    controller.updateClientTable(); // Recharge tous les clients
+                } else {
+                    int numPermis = Integer.parseInt(searchText);
+                    controller.searchClients(numPermis); // Recherche par numéro de permis
+                }
+
+            } catch (NumberFormatException ex) {
+                // Si l'utilisateur entre autre chose qu'un nombre, on affiche une erreur
+                JOptionPane.showMessageDialog(null, "Veuillez entrer un numéro valide.", "Erreur", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+
 
         add(mainPanel);
     }
@@ -110,31 +136,44 @@ public class ScooterView extends JFrame {
         return button;
     }
 
-    public void updateScooterTable(Vector<Scooter> scooters) {
+    public void updateClientTable(Vector<Client> clients) {
         tableModel.setRowCount(0);
-        for (Scooter scooter : scooters) {
+        for (Client client : clients) {
             Object[] row = {
-                scooter.getId(),
-                scooter.getModele().getNom(),
-                scooter.getAnneeSortie(),
-                scooter.getKm() + " km",
-                scooter.getPrixJour() + " €",
-                scooter.isDisponible() ? "Oui" : "Non",
-                scooter.getParc().getAdresse()
+                client.getNumPermis(),
+                client.getNom(),
+                client.getPrenom(),
+                client.getDateNaissance().toString(),
+                client.getAge(),
+                client.getAdresse(),
+                client.getParc().getAdresse()
             };
             tableModel.addRow(row);
         }
     }
 
-    public int getSelectedScooterId() {
-        int selectedRow = scooterTable.getSelectedRow();
+    public int getSelectedClientNumPermis() {
+        int selectedRow = clientTable.getSelectedRow();
         if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(this, 
-                "Veuillez sélectionner un scooter", 
+            JOptionPane.showMessageDialog(this,
+                "Veuillez sélectionner un client", 
                 "Attention", 
                 JOptionPane.WARNING_MESSAGE);
             return -1;
         }
         return (int) tableModel.getValueAt(selectedRow, 0);
     }
-} 
+    public int getSelectedClientId() {
+        int selectedRow = clientTable.getSelectedRow(); // clientTable est ton JTable des clients
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, 
+                "Veuillez sélectionner un client", 
+                "Attention", 
+                JOptionPane.WARNING_MESSAGE);
+            return -1;
+        }
+        return (int) clientTable.getValueAt(selectedRow, 0); // Colonne 0 = numéro de permis
+    }
+
+}
+

@@ -93,12 +93,20 @@ public class ParcView extends JFrame {
         // Ajout du panneau principal à la fenêtre
         add(mainPanel);
 
-        // Ajout du listener pour le bouton scooters
+      //   Ajout du listener pour le bouton scooters
         scootersButton.addActionListener(e -> {
             ScooterView scooterView = new ScooterView(parc);
             scooterView.setVisible(true);
         });
+        clientsButton.addActionListener(e -> {
+            ClientView clientView = new ClientView(parc); // Crée une nouvelle instance de ClientView
+            clientView.setVisible(true); // Affiche la nouvelle fenêtre
+        });
+
+        
     }
+    
+    
 
     private JButton createModernButton(String text) {
         JButton button = new JButton(text);

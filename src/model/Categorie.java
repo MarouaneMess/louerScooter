@@ -3,7 +3,7 @@ package model;
 import java.util.Vector;
 
 public class Categorie {
-    private final String[] categories = {
+    public static final String[] categories = {
         "A1", "A2", "A", "B", "B+E", "C", "C+E", "D", "D+E", "B1", "AM"
     };
 

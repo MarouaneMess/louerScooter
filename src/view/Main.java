@@ -60,5 +60,8 @@ public class Main {
         
         // Afficher le résumé initial
         parcView.afficherResumeParc();
+  
+       
+
     }
 }
