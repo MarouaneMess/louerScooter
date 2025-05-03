@@ -1,4 +1,5 @@
 package view;
+
 import model.*;
 import controller.*;
 import javax.swing.*;
@@ -7,16 +8,14 @@ import java.awt.event.ActionListener;
 import java.util.Vector;
 import javax.swing.table.DefaultTableModel;
 
-
-public class ScooterView extends JFrame {
+public class MarqueView extends JFrame {
     private Parc parc;
-    private JTable scooterTable;
+    private JTable marqueTable;
     private JScrollPane scrollPane;
     private JButton addButton, editButton, deleteButton;
     private JTextField searchField;
     private DefaultTableModel tableModel;
-    private ScooterController controller;
-
+    private MarqueController controller;
 
     // Couleurs et polices
     private static final Color PRIMARY_COLOR = new Color(63, 81, 181);
@@ -24,14 +23,14 @@ public class ScooterView extends JFrame {
     private static final Font TITLE_FONT = new Font("Segoe UI", Font.BOLD, 24);
     private static final Font BUTTON_FONT = new Font("Segoe UI", Font.PLAIN, 14);
 
-    public ScooterView(Parc parc) {
+    public MarqueView(Parc parc) {
         this.parc = parc;
         initializeUI();
-        controller = new ScooterController(this, parc);
+        controller = new MarqueController(this, parc);
     }
 
     private void initializeUI() {
-        setTitle("Gestion des Scooters");
+        setTitle("Gestion des Marques");
         setSize(1000, 600);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -45,8 +44,8 @@ public class ScooterView extends JFrame {
         // En-tête
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBackground(BACKGROUND_COLOR);
-        
-        JLabel titleLabel = new JLabel("Gestion des Scooters");
+
+        JLabel titleLabel = new JLabel("Gestion des Marques");
         titleLabel.setFont(TITLE_FONT);
         titleLabel.setForeground(PRIMARY_COLOR);
         headerPanel.add(titleLabel, BorderLayout.WEST);
@@ -61,18 +60,18 @@ public class ScooterView extends JFrame {
         searchPanel.add(searchButton);
         headerPanel.add(searchPanel, BorderLayout.EAST);
 
-        // Table des scooters
-        String[] columns = {"ID", "Modèle", "Année", "Kilométrage", "Prix/Jour", "Disponible", "Parc"};
+        // Table des marques
+        String[] columns = {"Nom", "Nombre de modèles"};
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
-        scooterTable = new JTable(tableModel);
-        scooterTable.setRowHeight(30);
-        scooterTable.getTableHeader().setFont(BUTTON_FONT);
-        scrollPane = new JScrollPane(scooterTable);
+        marqueTable = new JTable(tableModel);
+        marqueTable.setRowHeight(30);
+        marqueTable.getTableHeader().setFont(BUTTON_FONT);
+        scrollPane = new JScrollPane(marqueTable);
         scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
 
         // Panel des boutons
@@ -93,8 +92,8 @@ public class ScooterView extends JFrame {
         // Ajout des listeners
         addButton.addActionListener(e -> controller.showAddDialog());
         editButton.addActionListener(e -> controller.showEditDialog());
-        deleteButton.addActionListener(e -> controller.deleteScooter());
-        searchButton.addActionListener(e -> controller.searchScooters(searchField.getText()));
+        deleteButton.addActionListener(e -> controller.deleteMarque());
+        searchButton.addActionListener(e -> controller.searchMarques(searchField.getText()));
 
         add(mainPanel);
     }
@@ -110,31 +109,26 @@ public class ScooterView extends JFrame {
         return button;
     }
 
-    public void updateScooterTable(Vector<Scooter> scooters) {
+    public void updateMarqueTable(Vector<Marque> marques) {
         tableModel.setRowCount(0);
-        for (Scooter scooter : scooters) {
+        for (Marque marque : marques) {
             Object[] row = {
-                scooter.getId(),
-                scooter.getModele().getNom(),
-                scooter.getAnneeSortie(),
-                scooter.getKm() + " km",
-                scooter.getPrixJour() + " €",
-                scooter.isDisponible() ? "Oui" : "Non",
-                scooter.getParc().getAdresse()
+                marque.getNom(),
+                marque.getModeles().size()
             };
             tableModel.addRow(row);
         }
     }
 
-    public int getSelectedScooterId() {
-        int selectedRow = scooterTable.getSelectedRow();
+    public String getSelectedMarqueNom() {
+        int selectedRow = marqueTable.getSelectedRow();
         if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(this, 
-                "Veuillez sélectionner un scooter", 
-                "Attention", 
+            JOptionPane.showMessageDialog(this,
+                "Veuillez sélectionner une marque",
+                "Attention",
                 JOptionPane.WARNING_MESSAGE);
-            return -1;
+            return null;
         }
-        return (int) tableModel.getValueAt(selectedRow, 0);
+        return (String) tableModel.getValueAt(selectedRow, 0);
     }
 } 

@@ -1,4 +1,5 @@
 package view;
+
 import model.*;
 import controller.*;
 import javax.swing.*;
@@ -7,16 +8,14 @@ import java.awt.event.ActionListener;
 import java.util.Vector;
 import javax.swing.table.DefaultTableModel;
 
-
-public class ScooterView extends JFrame {
+public class ModeleView extends JFrame {
     private Parc parc;
-    private JTable scooterTable;
+    private JTable modeleTable;
     private JScrollPane scrollPane;
     private JButton addButton, editButton, deleteButton;
     private JTextField searchField;
     private DefaultTableModel tableModel;
-    private ScooterController controller;
-
+    private ModeleController controller;
 
     // Couleurs et polices
     private static final Color PRIMARY_COLOR = new Color(63, 81, 181);
@@ -24,29 +23,26 @@ public class ScooterView extends JFrame {
     private static final Font TITLE_FONT = new Font("Segoe UI", Font.BOLD, 24);
     private static final Font BUTTON_FONT = new Font("Segoe UI", Font.PLAIN, 14);
 
-    public ScooterView(Parc parc) {
+    public ModeleView(Parc parc) {
         this.parc = parc;
         initializeUI();
-        controller = new ScooterController(this, parc);
+        controller = new ModeleController(this, parc);
     }
 
     private void initializeUI() {
-        setTitle("Gestion des Scooters");
+        setTitle("Gestion des Modèles");
         setSize(1000, 600);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
-        getContentPane().setBackground(BACKGROUND_COLOR);
 
         // Panel principal
-        JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
+        JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBackground(BACKGROUND_COLOR);
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         // En-tête
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBackground(BACKGROUND_COLOR);
-        
-        JLabel titleLabel = new JLabel("Gestion des Scooters");
+        JLabel titleLabel = new JLabel("Gestion des Modèles");
         titleLabel.setFont(TITLE_FONT);
         titleLabel.setForeground(PRIMARY_COLOR);
         headerPanel.add(titleLabel, BorderLayout.WEST);
@@ -55,24 +51,23 @@ public class ScooterView extends JFrame {
         JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         searchPanel.setBackground(BACKGROUND_COLOR);
         searchField = new JTextField(20);
-        searchField.setPreferredSize(new Dimension(200, 30));
         JButton searchButton = createStyledButton("Rechercher");
         searchPanel.add(searchField);
         searchPanel.add(searchButton);
         headerPanel.add(searchPanel, BorderLayout.EAST);
 
-        // Table des scooters
-        String[] columns = {"ID", "Modèle", "Année", "Kilométrage", "Prix/Jour", "Disponible", "Parc"};
+        // Table des modèles
+        String[] columns = {"Nom", "Marque", "Puissance", "Catégories", "Nombre de Scooters"};
         tableModel = new DefaultTableModel(columns, 0) {
-            @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
-        scooterTable = new JTable(tableModel);
-        scooterTable.setRowHeight(30);
-        scooterTable.getTableHeader().setFont(BUTTON_FONT);
-        scrollPane = new JScrollPane(scooterTable);
+
+        modeleTable = new JTable(tableModel);
+        modeleTable.setRowHeight(30);
+        modeleTable.getTableHeader().setFont(BUTTON_FONT);
+        scrollPane = new JScrollPane(modeleTable);
         scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
 
         // Panel des boutons
@@ -93,8 +88,8 @@ public class ScooterView extends JFrame {
         // Ajout des listeners
         addButton.addActionListener(e -> controller.showAddDialog());
         editButton.addActionListener(e -> controller.showEditDialog());
-        deleteButton.addActionListener(e -> controller.deleteScooter());
-        searchButton.addActionListener(e -> controller.searchScooters(searchField.getText()));
+        deleteButton.addActionListener(e -> controller.deleteModele());
+        searchButton.addActionListener(e -> controller.searchModeles(searchField.getText()));
 
         add(mainPanel);
     }
@@ -110,31 +105,39 @@ public class ScooterView extends JFrame {
         return button;
     }
 
-    public void updateScooterTable(Vector<Scooter> scooters) {
+    public void updateModeleTable(Vector<Modele> modeles) {
         tableModel.setRowCount(0);
-        for (Scooter scooter : scooters) {
+        for (Modele modele : modeles) {
+            // Créer une liste des noms des catégories
+            StringBuilder categoriesStr = new StringBuilder();
+            for (Categorie categorie : modele.getCategories()) {
+                if (categoriesStr.length() > 0) {
+                    categoriesStr.append(", ");
+                }
+                categoriesStr.append(categorie.getCategorie());
+            }
+
             Object[] row = {
-                scooter.getId(),
-                scooter.getModele().getNom(),
-                scooter.getAnneeSortie(),
-                scooter.getKm() + " km",
-                scooter.getPrixJour() + " €",
-                scooter.isDisponible() ? "Oui" : "Non",
-                scooter.getParc().getAdresse()
+                modele.getNom(),
+                modele.getMarque().getNom(),
+                modele.getPuissance() + " CV",
+                categoriesStr.toString(),
+                modele.getScooters().size()
             };
             tableModel.addRow(row);
         }
     }
 
-    public int getSelectedScooterId() {
-        int selectedRow = scooterTable.getSelectedRow();
+
+    public String getSelectedModeleNom() {
+        int selectedRow = modeleTable.getSelectedRow();
         if (selectedRow == -1) {
             JOptionPane.showMessageDialog(this, 
-                "Veuillez sélectionner un scooter", 
+                "Veuillez sélectionner un modèle", 
                 "Attention", 
                 JOptionPane.WARNING_MESSAGE);
-            return -1;
+            return null;
         }
-        return (int) tableModel.getValueAt(selectedRow, 0);
+        return (String) tableModel.getValueAt(selectedRow, 0);  // Retourne le nom du modèle
     }
-} 
+}

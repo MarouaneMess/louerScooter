@@ -36,7 +36,8 @@ public class Main {
         Scooter scooter2 = new Scooter(2, pcx, LocalDate.of(2023, 1, 1), true, 0, 30.0, parc);
         parc.ajouterScooter(scooter1);
         parc.ajouterScooter(scooter2);
-        
+        nmax.ajouterScooter(scooter1);
+        pcx.ajouterScooter(scooter2);
         // Création des clients
         Vector<Categorie> categoriesClient1 = new Vector<>();
         categoriesClient1.add(catA);
@@ -60,5 +61,8 @@ public class Main {
         
         // Afficher le résumé initial
         parcView.afficherResumeParc();
+  
+       
+
     }
 }

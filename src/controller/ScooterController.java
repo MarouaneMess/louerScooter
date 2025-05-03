@@ -56,7 +56,7 @@ public class ScooterController {
         panel.add(immatLabel, gbc);
         
         gbc.gridx = 1;
-        JSpinner immatSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 999999, 1));
+        JSpinner immatSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 999999999, 1));
         panel.add(immatSpinner, gbc);
 
         // Modèle
@@ -72,7 +72,8 @@ public class ScooterController {
             public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
                 super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
                 if (value instanceof Modele) {
-                    setText(((Modele) value).getNom());
+                    Modele modele = (Modele) value;
+                    setText(modele.getNom() + " (" + modele.getMarque().getNom() + ")");
                 }
                 return this;
             }
@@ -86,7 +87,7 @@ public class ScooterController {
         panel.add(anneeLabel, gbc);
         
         gbc.gridx = 1;
-        JSpinner anneeSpinner = new JSpinner(new SpinnerNumberModel(2024, 2000, 2024, 1));
+        JSpinner anneeSpinner = new JSpinner(new SpinnerNumberModel(2025, 2000, 2025, 1));
         panel.add(anneeSpinner, gbc);
 
         // Kilométrage
@@ -196,14 +197,10 @@ public class ScooterController {
         // Champs du formulaire pré-remplis
         JTextField idField = new JTextField(String.valueOf(scooter.getId()));
         idField.setEditable(false); // L'ID ne peut pas être modifié
-        JComboBox<Modele> modeleCombo = new JComboBox<>(getAllModeles().toArray(new Modele[0]));
-        modeleCombo.setSelectedItem(scooter.getModele());
-        
-        JSpinner anneeSpinner = new JSpinner(new SpinnerDateModel(
-            Date.from(scooter.getAnneeSortie().atStartOfDay(ZoneId.systemDefault()).toInstant()),
-            null, null, Calendar.YEAR));
-        JSpinner.DateEditor editor = new JSpinner.DateEditor(anneeSpinner, "yyyy");
-        anneeSpinner.setEditor(editor);
+        JTextField modeleField = new JTextField(String.valueOf(scooter.getModele().getNom()));
+        modeleField.setEditable(false); // Le modele ne peut pas être modifié
+        JTextField anneeField = new JTextField(String.valueOf(scooter.getAnneeSortie()));
+        anneeField.setEditable(false);
         
         JTextField kmField = new JTextField(String.valueOf(scooter.getKm()));
         JTextField prixField = new JTextField(String.valueOf(scooter.getPrixJour()));
@@ -218,12 +215,12 @@ public class ScooterController {
         gbc.gridx = 0; gbc.gridy = 1;
         panel.add(new JLabel("Modèle:"), gbc);
         gbc.gridx = 1;
-        panel.add(modeleCombo, gbc);
+        panel.add(modeleField, gbc);
 
         gbc.gridx = 0; gbc.gridy = 2;
         panel.add(new JLabel("Année:"), gbc);
         gbc.gridx = 1;
-        panel.add(anneeSpinner, gbc);
+        panel.add(anneeField, gbc);
 
         gbc.gridx = 0; gbc.gridy = 3;
         panel.add(new JLabel("Kilométrage:"), gbc);
@@ -247,9 +244,6 @@ public class ScooterController {
 
         saveButton.addActionListener(e -> {
             try {
-                Modele modele = (Modele) modeleCombo.getSelectedItem();
-                LocalDate annee = ((Date) anneeSpinner.getValue()).toInstant()
-                    .atZone(ZoneId.systemDefault()).toLocalDate();
                 double km = Double.parseDouble(kmField.getText());
                 double prix = Double.parseDouble(prixField.getText());
                 boolean disponible = disponibleCheck.isSelected();
@@ -320,8 +314,7 @@ public class ScooterController {
         Vector<Scooter> filteredScooters = new Vector<>();
         for (Scooter scooter : parc.getScooters()) {
             if (String.valueOf(scooter.getId()).contains(searchText) ||
-                scooter.getModele().getNom().toLowerCase().contains(searchText.toLowerCase()) ||
-                scooter.getParc().getAdresse().toLowerCase().contains(searchText.toLowerCase())) {
+                scooter.getModele().getNom().toLowerCase().contains(searchText.toLowerCase())) {
                 filteredScooters.add(scooter);
             }
         }

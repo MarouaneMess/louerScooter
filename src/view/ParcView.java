@@ -3,7 +3,7 @@ import model.*;
 import controller.*;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
+// import java.awt.event.ActionListener;
 
 public class ParcView extends JFrame {
     private Parc parc;
@@ -93,12 +93,28 @@ public class ParcView extends JFrame {
         // Ajout du panneau principal à la fenêtre
         add(mainPanel);
 
-        // Ajout du listener pour le bouton scooters
+      //   Ajout du listener pour les boutons 
         scootersButton.addActionListener(e -> {
             ScooterView scooterView = new ScooterView(parc);
-            scooterView.setVisible(true);
+            scooterView.show();;
         });
+        clientsButton.addActionListener(e -> {
+            ClientView clientView = new ClientView(parc); 
+            clientView.show();; 
+        });
+        modelesButton.addActionListener(e ->{
+            ModeleView modeleView = new ModeleView(parc);
+            modeleView.show();
+        });
+        marquesButton.addActionListener(e ->{
+            MarqueView marqueView = new MarqueView(parc);
+            marqueView.show();
+        });
+
+        
     }
+    
+    
 
     private JButton createModernButton(String text) {
         JButton button = new JButton(text);
