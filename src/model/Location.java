@@ -38,6 +38,8 @@ public class Location {
         this.retour = null; 
 
         scooter.setDisponible(false);
+        scooter.ajouterLocation(this);
+        client.ajouterLocation(this);
     }
 
     public int getId() {
@@ -110,8 +112,7 @@ public class Location {
         return "LOCATION N°" + id + "\n" +
                "      - DATE DEBUT        : " + dateDebut + "\n" +
                "      - DATE RETOUR PREVUE: " + dateRetourPrevue + "\n" +
-               "      - RETOUR            : " + (retour != null ? retour : "Non retourné") + "\n" +
-               "------------------------------------------------------";
+               "      - RETOUR            : " + (retour != null ? retour : "Non retourné") ;  
     }
 
   

@@ -132,7 +132,7 @@ public class Client {
     }
 
     public Vector<Categorie> getCategories() {
-        return new Vector<>(listCategories);
+        return listCategories;
     }
 
 
@@ -144,13 +144,28 @@ public class Client {
     }
 
     public Vector<Location> getLocations() {
-        return new Vector<>(locations); //une copie pour eviter la modification de l'origin
+        return locations;
     }
     public void ajouterLocation(Location location) {
         if (location == null) {
             throw new IllegalArgumentException("La location ne peut pas être null.");
         }
         locations.add(location);
+    }
+    public void retirerLocation(Location location) {
+        if (location == null) {
+            throw new IllegalArgumentException("La location ne peut pas être null.");
+        }
+        if (locations.remove(location)) {
+            // Marquer le scooter associé comme disponible
+            Scooter scooter = location.getScooter();
+            if (scooter != null) {
+                scooter.setDisponible(true);
+                scooter.getLocations().remove(location); // Supprimer la location du scooter
+            }
+        } else {
+            throw new IllegalArgumentException("La location n'existe pas dans la liste.");
+        }
     }
 
 
@@ -160,8 +175,7 @@ public class Client {
                "      - PRÉNOM      : " + prenom + "\n" +
                "      - AGE         : " + getAge() + "\n" +
                "      - ADRESSE     : " + adresse + "\n" +
-               "      - CATEGORIES  : " + (listCategories.isEmpty() ? "Aucune" : listCategories) + "\n" +
-               "      - LOCATIONS   : " + (locations.isEmpty() ? "Aucune" : locations) + "\n" +
-               "------------------------------------------------------";
+               "      - LOCATIONS   : " + (locations.isEmpty() ? "0" : locations.size()) + "\n" ;
+              
     }
 }

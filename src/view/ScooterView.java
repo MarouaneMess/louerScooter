@@ -1,140 +1,77 @@
 package view;
-import model.*;
-import controller.*;
+
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
-import java.util.Vector;
-import javax.swing.table.DefaultTableModel;
-
 
 public class ScooterView extends JFrame {
-    private Parc parc;
     private JTable scooterTable;
-    private JScrollPane scrollPane;
-    private JButton addButton, editButton, deleteButton;
+    private JButton addButton;
+    private JButton editButton;
+    private JButton deleteButton;
     private JTextField searchField;
-    private DefaultTableModel tableModel;
-    private ScooterController controller;
+    private JButton searchButton;
 
-
-    // Couleurs et polices
-    private static final Color PRIMARY_COLOR = new Color(63, 81, 181);
-    private static final Color BACKGROUND_COLOR = new Color(250, 250, 250);
-    private static final Font TITLE_FONT = new Font("Segoe UI", Font.BOLD, 24);
-    private static final Font BUTTON_FONT = new Font("Segoe UI", Font.PLAIN, 14);
-
-    public ScooterView(Parc parc) {
-        this.parc = parc;
-        initializeUI();
-        controller = new ScooterController(this, parc);
-    }
-
-    private void initializeUI() {
+    public ScooterView() {
         setTitle("Gestion des Scooters");
-        setSize(1000, 600);
+        setSize(700, 400);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
-        getContentPane().setBackground(BACKGROUND_COLOR);
 
-        // Panel principal
-        JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
-        mainPanel.setBackground(BACKGROUND_COLOR);
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-
-        // En-tête
-        JPanel headerPanel = new JPanel(new BorderLayout());
-        headerPanel.setBackground(BACKGROUND_COLOR);
-        
-        JLabel titleLabel = new JLabel("Gestion des Scooters");
-        titleLabel.setFont(TITLE_FONT);
-        titleLabel.setForeground(PRIMARY_COLOR);
-        headerPanel.add(titleLabel, BorderLayout.WEST);
-
-        // Barre de recherche
-        JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        searchPanel.setBackground(BACKGROUND_COLOR);
-        searchField = new JTextField(20);
-        searchField.setPreferredSize(new Dimension(200, 30));
-        JButton searchButton = createStyledButton("Rechercher");
-        searchPanel.add(searchField);
-        searchPanel.add(searchButton);
-        headerPanel.add(searchPanel, BorderLayout.EAST);
+        // Layout principal
+        setLayout(new BorderLayout());
 
         // Table des scooters
-        String[] columns = {"ID", "Modèle", "Année", "Kilométrage", "Prix/Jour", "Disponible", "Parc"};
-        tableModel = new DefaultTableModel(columns, 0) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-        };
-        scooterTable = new JTable(tableModel);
-        scooterTable.setRowHeight(30);
-        scooterTable.getTableHeader().setFont(BUTTON_FONT);
-        scrollPane = new JScrollPane(scooterTable);
-        scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+        scooterTable = new JTable();
+        JScrollPane tableScrollPane = new JScrollPane(scooterTable);
+        add(tableScrollPane, BorderLayout.CENTER);
 
-        // Panel des boutons
+        // Panel pour les boutons et la recherche
+        JPanel actionPanel = new JPanel(new BorderLayout());
+
+        // Champ de recherche
+        JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        searchField = new JTextField(20);
+        searchButton = new JButton("Rechercher");
+        searchPanel.add(new JLabel("Recherche :"));
+        searchPanel.add(searchField);
+        searchPanel.add(searchButton);
+        actionPanel.add(searchPanel, BorderLayout.NORTH);
+
+        // Boutons d'action
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        buttonPanel.setBackground(BACKGROUND_COLOR);
-        addButton = createStyledButton("Ajouter");
-        editButton = createStyledButton("Modifier");
-        deleteButton = createStyledButton("Supprimer");
+        addButton = new JButton("Ajouter");
+        editButton = new JButton("Modifier");
+        deleteButton = new JButton("Supprimer");
         buttonPanel.add(addButton);
         buttonPanel.add(editButton);
         buttonPanel.add(deleteButton);
+        actionPanel.add(buttonPanel, BorderLayout.SOUTH);
 
-        // Ajout des composants
-        mainPanel.add(headerPanel, BorderLayout.NORTH);
-        mainPanel.add(scrollPane, BorderLayout.CENTER);
-        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
-
-        // Ajout des listeners
-        addButton.addActionListener(e -> controller.showAddDialog());
-        editButton.addActionListener(e -> controller.showEditDialog());
-        deleteButton.addActionListener(e -> controller.deleteScooter());
-        searchButton.addActionListener(e -> controller.searchScooters(searchField.getText()));
-
-        add(mainPanel);
+        add(actionPanel, BorderLayout.SOUTH);
     }
 
-    private JButton createStyledButton(String text) {
-        JButton button = new JButton(text);
-        button.setFont(BUTTON_FONT);
-        button.setBackground(PRIMARY_COLOR);
-        button.setForeground(Color.WHITE);
-        button.setFocusPainted(false);
-        button.setBorderPainted(false);
-        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        return button;
+    // Getters pour accéder aux composants
+    public JTable getScooterTable() {
+        return scooterTable;
     }
 
-    public void updateScooterTable(Vector<Scooter> scooters) {
-        tableModel.setRowCount(0);
-        for (Scooter scooter : scooters) {
-            Object[] row = {
-                scooter.getId(),
-                scooter.getModele().getNom(),
-                scooter.getAnneeSortie(),
-                scooter.getKm() + " km",
-                scooter.getPrixJour() + " €",
-                scooter.isDisponible() ? "Oui" : "Non",
-                scooter.getParc().getAdresse()
-            };
-            tableModel.addRow(row);
-        }
+    public JButton getAddButton() {
+        return addButton;
     }
 
-    public int getSelectedScooterId() {
-        int selectedRow = scooterTable.getSelectedRow();
-        if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(this, 
-                "Veuillez sélectionner un scooter", 
-                "Attention", 
-                JOptionPane.WARNING_MESSAGE);
-            return -1;
-        }
-        return (int) tableModel.getValueAt(selectedRow, 0);
+    public JButton getEditButton() {
+        return editButton;
     }
-} 
+
+    public JButton getDeleteButton() {
+        return deleteButton;
+    }
+
+    public JTextField getSearchField() {
+        return searchField;
+    }
+
+    public JButton getSearchButton() {
+        return searchButton;
+    }
+}

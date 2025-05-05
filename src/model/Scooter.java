@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.util.Vector;
 
 public class Scooter {
-    private int immatriculation;
+    private String immatriculation;
     private Modele modele;
     private LocalDate annee_sortie;
     private boolean disponible;
@@ -15,7 +15,7 @@ public class Scooter {
 
 
  
-    public Scooter(int immatriculation, Modele modele, LocalDate annee_sortie, boolean disponible, double km, double prix_Jour, Parc parc) {
+    public Scooter(String immatriculation, Modele modele, LocalDate annee_sortie, boolean disponible, double km, double prix_Jour, Parc parc) {
         if (annee_sortie.isAfter(LocalDate.now())) {
             throw new IllegalArgumentException("L'année de sortie ne peut pas être future.");
         }
@@ -37,22 +37,26 @@ public class Scooter {
         this.prix_Jour = prix_Jour;
         this.locations = new Vector<>();
         this.parc = parc;
+        modele.ajouterScooter(this);
     
     }
 
-    public void setId(int id ){
+    public void setId(String id ){
         this.immatriculation=id;
     }
-    public int getId() {
+    public String getId() {
         return immatriculation;
+    }
+    public void setModele(Modele mdl){
+        this.modele=mdl;
     }
 
     public Modele getModele() {
         return modele;
     }
 
-    public LocalDate getAnneeSortie() {
-        return annee_sortie;
+    public int getAnneeSortie() {
+        return annee_sortie.getYear();
     }
 
     public void setDisponible(boolean disponible) {
@@ -94,8 +98,20 @@ public class Scooter {
         locations.add(location);
     }
 
+    public void retirerLocation(Location location) {
+        if (location == null) {
+            throw new IllegalArgumentException("La location ne peut pas être null.");
+        }
+        if (locations.remove(location)) {
+            location.getClient().retirerLocation(location); 
+        } else {
+            throw new IllegalArgumentException("La location n'existe pas dans la liste des locations de ce scooter.");
+        }
+    }
+
+    
     public Vector<Location> getLocations() {
-        return new Vector<>(locations);
+        return locations;
     }
     public void setParc(Parc p){
         this.parc = p;
@@ -103,17 +119,14 @@ public class Scooter {
     public Parc getParc() {
         return parc;
     }
+    @Override
     public String toString() {
-        return 
-                "SCOOTER N° " + getId() +"\n" +
-        "      - MODELE        : "  + getModele() + "\n" + 
-        "      - ANNEE_DE_SORTIE : "  + getAnneeSortie() +"\n" +
-        "      - KILOMETRAGE : " + getKm() +" Km "+"\n" +
-        "      - PRIX_JOUR : " + getPrixJour() +" Euros "+"\n"+
-        "      - EN LOCATION : " + (isDisponible() ? "OUI" : "NON") + "\n" +
-        "      - PARC        : " + (parc != null ? parc.getAdresse() : "Non assigné") + "\n" +
-        "      - NOMBRE LOCATIONS: " + locations.size() + "\n" +
-        "----------------------------------------------------------------";
+        return "SCOOTER N° " + getId() + "\n" +
+               "      - MODELE        : " + getModele().getNom() + "\n" +
+               "      - ANNEE         : " + getAnneeSortie() + "\n" +
+               "      - KILOMETRAGE   : " + getKm() + " Km\n" +
+               "      - PRIX/JOUR     : " + getPrixJour() + " Euros\n" +
+               "      - DISPONIBLE    : " + (isDisponible() ? "OUI" : "NON") ;
     }
       
 

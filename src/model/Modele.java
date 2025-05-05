@@ -33,6 +33,7 @@ public class Modele {
         for (Categorie c : categories) {
             ajouterCategorie(c);
         }
+        // marque.ajouterModele(this);
     }
 
     public String getNom() {
@@ -75,7 +76,7 @@ public class Modele {
     }
 
     public Vector<Categorie> getCategories() {
-        return new Vector<>(listCategories);
+        return listCategories;
     }
 
     public void setCategories(Vector<Categorie> categories) {
@@ -98,11 +99,14 @@ public class Modele {
         if (scooters == null) {
             throw new IllegalArgumentException("La liste des scooters ne peut pas être null.");
         }
-        this.scooters = new Vector<>(scooters);
+        this.scooters = scooters;
+        for (Scooter scooter : scooters) {
+            scooter.setModele(this); // Synchroniser chaque scooter avec ce modèle
+        }
     }
 
     public Vector<Scooter> getScooters() {
-        return new Vector<>(scooters);
+        return scooters;
     }
 
     public void ajouterScooter(Scooter s) {

@@ -1,55 +1,115 @@
 package controller;
-import model.*;
-import view.*;
-import java.awt.event.ActionEvent;
+
+import view.ClientView;
+import view.LocationView;
+import view.MarqueView;
+import view.ModeleView;
+import view.ParcView;
+import view.ScooterView;
 import java.awt.event.ActionListener;
 
-public class ParcController {
-    private Parc model;
+import model.Parc;
+
+import java.awt.event.ActionEvent;
+
+public class ParcController implements ActionListener {
     private ParcView view;
+    private Parc parc; 
 
-    public ParcController(Parc model, ParcView view) {
-        this.model = model;
+    public ParcController(ParcView view, Parc parc) { 
         this.view = view;
-
-        // Ajout des listeners pour les boutons
-        view.getResumeButton().addActionListener(e -> updateResume());
-        view.getScootersButton().addActionListener(e -> afficherScooters());
-        view.getClientsButton().addActionListener(e -> afficherClients());
-        view.getModelesButton().addActionListener(e -> afficherModeles());
-        view.getMarquesButton().addActionListener(e -> afficherMarques());
-        // view.getLocationsButton().addActionListener(e -> afficherLocations());
-        // view.getRetoursButton().addActionListener(e -> afficherRetours());
+        this.parc = parc;
+        initializeListeners();
     }
 
-    // Méthodes pour gérer les actions de l'utilisateur
-    public void updateResume() {
-        view.afficherResumeParc();
+    private void initializeListeners() {
+        view.getAfficherResumeBtn().addActionListener(this);
+        view.getGestionScootersBtn().addActionListener(this);
+        view.getGestionClientsBtn().addActionListener(this);
+        view.getGestionModelesBtn().addActionListener(this);
+        view.getGestionMarquesBtn().addActionListener(this);
+        view.getGestionLocationsBtn().addActionListener(this);
+        view.getGestionRetoursBtn().addActionListener(this);
     }
 
-    public void afficherScooters() {
-        view.afficherScootersView();
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == view.getAfficherResumeBtn()) {
+            afficherResume();
+        } else if (e.getSource() == view.getGestionScootersBtn()) {
+            ouvrirGestionScooters();
+        } else if (e.getSource() == view.getGestionClientsBtn()) {
+            ouvrirGestionClients();
+        } else if (e.getSource() == view.getGestionModelesBtn()) {
+            ouvrirGestionModeles();
+        } else if (e.getSource() == view.getGestionMarquesBtn()) {
+            ouvrirGestionMarques();
+        } else if (e.getSource() == view.getGestionLocationsBtn()) {
+            ouvrirGestionLocations();
+        } else if (e.getSource() == view.getGestionRetoursBtn()) {
+            ouvrirGestionRetours();
+        }
     }
 
-    public void afficherClients() {
-        view.afficherClientsView();
+    // Méthode pour afficher le résumé
+    private void afficherResume() {
+        updateResumeData();
     }
 
-    public void afficherModeles() {
-        view.afficherModelesView();
+    // Méthode pour ouvrir la gestion des scooters
+    private void ouvrirGestionScooters() {
+        ScooterView scooterView = new ScooterView();
+        new ScooterController(scooterView, parc);
+        scooterView.setVisible(true);
     }
 
-    public void afficherMarques() {
-        view.afficherMarquesView();
+    // Méthode pour ouvrir la gestion des clients
+    private void ouvrirGestionClients() {
+        ClientView clientView = new ClientView();
+        new ClientController(clientView, parc);
+        clientView.setVisible(true);
     }
 
-    // public void afficherLocations() {
-    //     view.afficherLocationsView();
-    // }
+    // Méthode pour ouvrir la gestion des modèles
+    private void ouvrirGestionModeles() {
+        ModeleView modeleView = new ModeleView();
+        new ModeleController(modeleView, parc);
+        modeleView.setVisible(true);
+    }
 
-    // public void afficherRetours() {
-    //     view.afficherRetoursView();
-    // }
+    // Méthode pour ouvrir la gestion des marques
+    private void ouvrirGestionMarques() {
+       MarqueView marqueView = new MarqueView();
+       new MarqueController(marqueView,parc);
+       marqueView.setVisible(true);
+    }
 
-    // Ajoutez d'autres méthodes pour gérer les interactions
+    // Méthode pour ouvrir la gestion des locations
+    private void ouvrirGestionLocations() {
+       LocationView locationView = new LocationView();
+       new LocationController(locationView, parc );
+       locationView.setVisible(true);
+    }
+
+    // Méthode pour ouvrir la gestion des retours
+    private void ouvrirGestionRetours() {
+        System.out.println("Ouverture de la gestion des retours");
+        // TODO: Implémenter la logique pour ouvrir la vue de gestion des retours
+    }
+
+    // Méthode pour mettre à jour les données du résumé
+    public void updateResumeData() {
+        Object[] resumeData = parc.getResumeParc();
+
+        int totalScooters = (int) resumeData[0];
+        int scootersDisponibles = (int) resumeData[1];
+        int scootersEnLocation = (int) resumeData[2];
+        int nombreClients = (int) resumeData[3];
+        double kmMoyen = (double) resumeData[4];
+        // int mdl = (int) resumeData[5];
+        // System.out.println((int) resumeData[5]);
+
+        // view.updateResume(totalScooters, scootersDisponibles, scootersEnLocation, nombreClients, kmMoyen,mdl);
+        view.updateResume(totalScooters, scootersDisponibles, scootersEnLocation, nombreClients, kmMoyen);
+    }
 }

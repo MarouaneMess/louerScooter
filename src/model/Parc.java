@@ -93,9 +93,9 @@ public class Parc {
         marques.add(marque);
     }
 
-    public Scooter rechercherScooter(int idScooter) {
-        for (Scooter scooter : scooters) {
-            if (scooter.getId() == idScooter) {
+    public Scooter rechercherScooter(Scooter scooter) {
+        for (Scooter sc : scooters) {
+            if (sc.equals(scooter)) {
                 return scooter;
             }
         }
@@ -140,8 +140,8 @@ public class Parc {
         return false;
     }
 
-    public boolean supprimerScooter(int idScooter) {
-        Scooter scooterASupprimer = rechercherScooter(idScooter);
+    public boolean supprimerScooter(Scooter sc) {
+        Scooter scooterASupprimer = rechercherScooter(sc);
         if (scooterASupprimer != null) {
             // Supprimer toutes les locations associées à ce scooter
             for (Client client : clients) {
@@ -171,7 +171,7 @@ public class Parc {
             for (Modele modele : modeles) {
                 Vector<Scooter> scootersASupprimer = new Vector<>(modele.getScooters());
                 for (Scooter scooter : scootersASupprimer) {
-                    supprimerScooter(scooter.getId()); // Gérer les locations et supprimer le scooter
+                    supprimerScooter(scooter); // Gérer les locations et supprimer le scooter
                 }
                 marqueASupprimer.retirerModele(modele);
             }
@@ -182,8 +182,14 @@ public class Parc {
         return false;
     }
 
-    public boolean louerScooter(int idScooter, int idClient, LocalDate dateDebut, LocalDate dateRetourPrev) {
-        Scooter scooter = rechercherScooter(idScooter);
+    public boolean louerScooter(String idScooter, int idClient, LocalDate dateDebut, LocalDate dateRetourPrev) {
+        Scooter scooter =null;
+        for (Scooter sc : scooters) {
+            if (sc.getId().equals(idScooter)) {
+                scooter = sc; 
+                break; 
+            }
+        }
         if (scooter == null) {
             System.out.println("Scooter introuvable.");
             return false;
@@ -204,10 +210,10 @@ public class Parc {
         return true;
     }
 
-    public boolean retournerScooter(int idScooter, double kmEffectue) {
+    public boolean retournerScooter(String idScooter, double kmEffectue) {
         for (Client client : clients) {
             for (Location location : client.getLocations()) {
-                if (location.getScooter().getId() == idScooter) {
+                if (location.getScooter().getId().equals(idScooter)) {
                     if (location.getRetour() != null) {
                         System.out.println("Le scooter a déjà été retourné.");
                         return false;
@@ -265,23 +271,37 @@ public class Parc {
         }
     }
 
-    public void afficherResumeParc() {
+    public Object[] getResumeParc() {
         int total = scooters.size();
         int enLocation = 0;
         double kmTotal = 0;
 
-        System.out.println("\n=== État Résumé du Parc ===");
         for (Scooter scooter : scooters) {
             kmTotal += scooter.getKm();
-            if (!scooter.isDisponible())
+            if (!scooter.isDisponible()) {
                 enLocation++;
+            }
         }
-        System.out.println("PARC - Adresse : " + adresse);
-        System.out.println("    - Nombre de clients  : " + clients.size());
-        System.out.println("    - Nombre de marques  : " + marques.size());
-        System.out.println("    - Nombre total de scooters : " + total);
-        System.out.println("    - Nombre de scooters en location : " + enLocation);
-        System.out.println("    - Nombre de scooters disponibles : " + (total - enLocation));
-        System.out.println("    - Kilométrage moyen : " + (total > 0 ? kmTotal / total : 0));
+        // Vector<Modele> mdl = new Vector<Modele>();
+        // for (Marque mrq : marques) {
+        //     mdl.addAll(mrq.getModeles());
+        // }
+
+        int disponibles = total - enLocation;
+        double kmMoyen = (total > 0) ? kmTotal / total : 0;
+
+        // Retourner les données sous forme d'un tableau d'objets
+        // return new Object[]{total, disponibles, enLocation, clients.size(), kmMoyen,mdl.size()};
+        return new Object[]{total, disponibles, enLocation, clients.size(), kmMoyen};
     }
+    public Vector<Scooter> getScootersDispo() {
+        Vector<Scooter> scootersDisponibles = new Vector<>();
+        for (Scooter scooter : scooters) {
+            if (scooter.isDisponible()) {
+                scootersDisponibles.add(scooter);
+            }
+        }
+        return scootersDisponibles;
+    }
+
 }

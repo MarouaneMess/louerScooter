@@ -4,7 +4,7 @@ import java.util.Vector;
 
 public class Categorie {
     public static final String[] categories = {
-        "A1", "A2", "A", "B", "B+E", "C", "C+E", "D", "D+E", "B1", "AM"
+        "A1", "A2", "A", "AM"
     };
 
     private String categorie;

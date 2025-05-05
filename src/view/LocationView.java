@@ -3,56 +3,52 @@ package view;
 import javax.swing.*;
 import java.awt.*;
 
-public class MarqueView extends JFrame {
-    private JTable marqueTable;
+public class LocationView extends JFrame {
+    private JTable locationTable;
     private JButton addButton;
-    private JButton editButton;
     private JButton deleteButton;
     private JButton searchButton;
     private JTextField searchField;
+    private JComboBox<String> filterComboBox;
 
-    public MarqueView() {
-        setTitle("Gestion des Marques");
-        setSize(700, 400);
+    public LocationView() {
+        setTitle("Gestion des Locations");
+        setSize(800, 400);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
 
         // Initialiser le tableau
-        marqueTable = new JTable();
-        JScrollPane tableScrollPane = new JScrollPane(marqueTable);
+        locationTable = new JTable();
+        JScrollPane tableScrollPane = new JScrollPane(locationTable);
         add(tableScrollPane, BorderLayout.CENTER);
 
         // Panneau de recherche
         JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         searchField = new JTextField(20);
         searchButton = new JButton("Rechercher");
+        filterComboBox = new JComboBox<>(new String[]{"Par Client", "Par Scooter"});
         searchPanel.add(new JLabel("Recherche :"));
         searchPanel.add(searchField);
+        searchPanel.add(filterComboBox);
         searchPanel.add(searchButton);
         add(searchPanel, BorderLayout.NORTH);
 
         // Panneau des boutons
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         addButton = new JButton("Ajouter");
-        editButton = new JButton("Modifier");
         deleteButton = new JButton("Supprimer");
         buttonPanel.add(addButton);
-        buttonPanel.add(editButton);
         buttonPanel.add(deleteButton);
         add(buttonPanel, BorderLayout.SOUTH);
     }
 
     // Getters pour accéder aux composants
-    public JTable getMarqueTable() {
-        return marqueTable;
+    public JTable getLocationTable() {
+        return locationTable;
     }
 
     public JButton getAddButton() {
         return addButton;
-    }
-
-    public JButton getEditButton() {
-        return editButton;
     }
 
     public JButton getDeleteButton() {
@@ -65,5 +61,9 @@ public class MarqueView extends JFrame {
 
     public JTextField getSearchField() {
         return searchField;
+    }
+
+    public JComboBox<String> getFilterComboBox() {
+        return filterComboBox;
     }
 }

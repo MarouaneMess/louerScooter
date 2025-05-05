@@ -1,379 +1,329 @@
 package controller;
 
-import view.*;
-import model.*;
-import javax.swing.*;
-import java.awt.*;
-import java.util.Vector;
+import model.Categorie;
+import model.Marque;
+import model.Modele;
+import model.Parc;
+import model.Scooter;
+import view.ModeleView;
 
-public class ModeleController {
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Vector;
+import java.awt.GridLayout;
+
+public class ModeleController implements ActionListener {
     private ModeleView view;
     private Parc parc;
 
     public ModeleController(ModeleView view, Parc parc) {
         this.view = view;
         this.parc = parc;
-        updateModeleList();
-    }
 
-    public void updateModeleList() {
-        Vector<Modele> tousLesModeles = new Vector<>();
-        for (Marque marque : parc.getMarques()) {
-            tousLesModeles.addAll(marque.getModeles());
+        // Attacher les écouteurs aux boutons
+        view.getAddButton().addActionListener(this);
+        view.getEditButton().addActionListener(this);
+        view.getDeleteButton().addActionListener(this);
+        view.getSearchButton().addActionListener(this);
+
+        // Charger les données initiales
+        updateModeleTable();
+    }
+    
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == view.getAddButton()) {
+            ajouterModele();
+        } else if (e.getSource() == view.getEditButton()) {
+            modifierModele();
+        } else if (e.getSource() == view.getDeleteButton()) {
+            supprimerModele();
+        } else if (e.getSource() == view.getSearchButton()) {
+            rechercherModele();
         }
-        view.updateModeleTable(tousLesModeles);
     }
 
-    public void showAddDialog() {
-        JDialog dialog = new JDialog((Frame)SwingUtilities.getWindowAncestor(view), "Ajouter un Modèle", true);
-        dialog.setSize(400, 500);
-        dialog.setLocationRelativeTo(view);
+    private void updateModeleTable() {
+        String[] columns = {"Nom", "Marque", "Puissance", "Catégories"};
+        Vector<String[]> data = new Vector<>();
 
-        JPanel panel = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-
-        // Titre
-        JLabel titleLabel = new JLabel("Nouveau Modèle");
-        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.gridwidth = 2;
-        panel.add(titleLabel, gbc);
-
-        // Nom
-        gbc.gridy = 1;
-        gbc.gridwidth = 1;
-        JLabel nomLabel = new JLabel("Nom :");
-        panel.add(nomLabel, gbc);
-        
-        gbc.gridx = 1;
-        JTextField nomField = new JTextField(20);
-        panel.add(nomField, gbc);
-
-        // Marque
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        JLabel marqueLabel = new JLabel("Marque :");
-        panel.add(marqueLabel, gbc);
-        
-        gbc.gridx = 1;
-        JComboBox<Marque> marqueCombo = new JComboBox<>(parc.getMarques().toArray(new Marque[0]));
-        marqueCombo.setRenderer(new DefaultListCellRenderer() {
-            @Override
-            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-                if (value instanceof Marque) {
-                    setText(((Marque) value).getNom());
-                }
-                return this;
-            }
-        });
-        panel.add(marqueCombo, gbc);
-
-        // Puissance
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        JLabel puissanceLabel = new JLabel("Puissance (CV) :");
-        panel.add(puissanceLabel, gbc);
-        
-        gbc.gridx = 1;
-        JSpinner puissanceSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 1000, 1));
-        panel.add(puissanceSpinner, gbc);
-
-        // Catégories
-        gbc.gridx = 0;
-        gbc.gridy = 4;
-        JLabel categoriesLabel = new JLabel("Catégories :");
-        panel.add(categoriesLabel, gbc);
-        
-        gbc.gridx = 1;
-        // Récupérer toutes les catégories uniques à partir des modèles existants
-        Vector<Categorie> categories = new Vector<>();
+        // Parcourir les marques pour récupérer les modèles
         for (Marque marque : parc.getMarques()) {
             for (Modele modele : marque.getModeles()) {
-                for (Categorie categorie : modele.getCategories()) {
-                    if (!categories.contains(categorie)) {
-                        categories.add(categorie);
-                    }
+                String[] row = new String[columns.length];
+                row[0] = modele.getNom();
+                row[1] = marque.getNom();
+                row[2] = String.valueOf(modele.getPuissance())+" Chevaux";
+                Vector <String>catgrs= new Vector<String>();
+                // boucle pour recuperer les categories 
+                for (Categorie cat : modele.getCategories()){
+                    catgrs.add(cat.getCategorie());
                 }
+                row[3] = String.valueOf(catgrs); 
+                data.add(row);
             }
         }
-        JComboBox<Categorie> categoriesCombo = new JComboBox<>(categories.toArray(new Categorie[0]));
-        categoriesCombo.setRenderer(new DefaultListCellRenderer() {
+
+        // Convertir data en tableau 
+        String[][] tableData = data.toArray(new String[0][]);
+
+        DefaultTableModel model = new DefaultTableModel(tableData, columns) {
             @Override
-            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-                if (value instanceof Categorie) {
-                    setText(((Categorie) value).getCategorie());
-                }
-                return this;
+            public boolean isCellEditable(int row, int column) {
+                return false; 
             }
-        });
-        panel.add(categoriesCombo, gbc);
+        };
 
-        // Boutons
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        JButton saveButton = new JButton("Enregistrer");
-        JButton cancelButton = new JButton("Annuler");
-
-        saveButton.addActionListener(e -> {
-            try {
-                String nom = nomField.getText().trim();
-                if (nom.isEmpty()) {
-                    throw new Exception("Le nom est obligatoire");
-                }
-
-                Marque marque = (Marque) marqueCombo.getSelectedItem();
-                int puissance = (Integer) puissanceSpinner.getValue();
-                Categorie selectedCategorie = (Categorie) categoriesCombo.getSelectedItem();
-                Vector<Categorie> selectedCategories = new Vector<>();
-                selectedCategories.add(selectedCategorie);
-
-                if (selectedCategories.isEmpty()) {
-                    throw new Exception("Veuillez sélectionner au moins une catégorie");
-                }
-
-                Modele nouveauModele = new Modele(nom, marque, puissance, selectedCategories);
-                marque.ajouterModele(nouveauModele);
-                
-                updateModeleList();
-                dialog.dispose();
-                
-                JOptionPane.showMessageDialog(dialog,
-                    "Modèle ajouté avec succès",
-                    "Succès",
-                    JOptionPane.INFORMATION_MESSAGE);
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(dialog,
-                    "Erreur: " + ex.getMessage(),
-                    "Erreur",
-                    JOptionPane.ERROR_MESSAGE);
-            }
-        });
-
-        cancelButton.addActionListener(e -> dialog.dispose());
-
-        buttonPanel.add(saveButton);
-        buttonPanel.add(cancelButton);
-
-        gbc.gridx = 0;
-        gbc.gridy = 5;
-        gbc.gridwidth = 2;
-        panel.add(buttonPanel, gbc);
-
-        dialog.add(panel);
-        dialog.setVisible(true);
+        view.getModeleTable().setModel(model);
     }
 
-    public void showEditDialog() {
-        String selectedNom = view.getSelectedModeleNom();
-        if (selectedNom == null) return;
+    private void ajouterModele() {
+        JTextField nomField = new JTextField();
+        JComboBox<String> marqueComboBox = new JComboBox<>();
+        JSpinner puissanceSpinner = new JSpinner(new SpinnerNumberModel(50, 1, 1000, 1)); // Puissance entre 1 et 1000
 
-        Modele[] modeleRef = new Modele[1];
+        // Utiliser les catégories définies dans la classe Categorie
+        JPanel categoriesPanel = new JPanel(new GridLayout(1, 4));
+        JCheckBox[] categoriesCheckBoxes = new JCheckBox[Categorie.categories.length];
+
+        for (int i = 0; i < Categorie.categories.length; i++) {
+            categoriesCheckBoxes[i] = new JCheckBox(Categorie.categories[i]);
+            categoriesPanel.add(categoriesCheckBoxes[i]);
+        }
+
+        // Remplir le JComboBox avec les marques disponibles
         for (Marque marque : parc.getMarques()) {
-            for (Modele m : marque.getModeles()) {
-                if (m.getNom().equals(selectedNom)) {
-                    modeleRef[0] = m;
+            marqueComboBox.addItem(marque.getNom());
+        }
+
+        JPanel panel = new JPanel(new GridLayout(5, 2));
+        panel.add(new JLabel("Nom :"));
+        panel.add(nomField);
+        panel.add(new JLabel("Marque :"));
+        panel.add(marqueComboBox);
+        panel.add(new JLabel("Puissance :"));
+        panel.add(puissanceSpinner);
+        panel.add(new JLabel("Catégories :"));
+        panel.add(new JScrollPane(categoriesPanel)); 
+
+        int result = JOptionPane.showConfirmDialog(view, panel, "Ajouter un Modèle", JOptionPane.OK_CANCEL_OPTION);
+        if (result == JOptionPane.OK_OPTION) {
+            try {
+                String nom = nomField.getText().trim();
+                String marqueNom = (String) marqueComboBox.getSelectedItem();
+                int puissance = (int) puissanceSpinner.getValue();
+
+                // Récupérer les catégories sélectionnées
+                Vector<Categorie> categories = new Vector<>();
+                for (int i = 0; i < categoriesCheckBoxes.length; i++) {
+                    if (categoriesCheckBoxes[i].isSelected()) {
+                        categories.add(new Categorie(Categorie.categories[i]));
+                    }
+                }
+
+                // Trouver la marque correspondante
+                Marque marque = parc.rechercherMarque(marqueNom);
+                // Créer et ajouter le modèle
+                Modele modele = new Modele(nom, marque, puissance, categories);
+                marque.ajouterModele(modele);
+
+                // Mettre à jour la table
+                updateModeleTable();
+                JOptionPane.showMessageDialog(view, "Modèle ajouté avec succès !");
+            } catch (IllegalArgumentException ex) {
+                JOptionPane.showMessageDialog(view, "Erreur : " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    private void modifierModele() {
+        int selectedRow = view.getModeleTable().getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(view, "Veuillez sélectionner un modèle à modifier.");
+            return;
+        }
+
+        // Récupérer les informations du modèle sélectionné
+        String modeleNom = (String) view.getModeleTable().getValueAt(selectedRow, 0);
+        String marqueNom = (String) view.getModeleTable().getValueAt(selectedRow, 1);
+
+        // Trouver le modèle et sa marque
+        Modele modele = null;
+        Marque marque = parc.rechercherMarque(marqueNom);
+
+                for (Modele mod : marque.getModeles()) {
+                    if (mod.getNom().equals(modeleNom)) {
+                        modele = mod;
+                        break;
+                    }
+                }
+            
+            
+        
+
+        // Préparer les champs pour la modification
+        JTextField nomField = new JTextField(modele.getNom());
+        nomField.setEditable(false); // Le nom n'est pas modifiable
+        JTextField marqueField = new JTextField(marque.getNom());
+        marqueField.setEditable(false); // La marque n'est pas modifiable
+        JSpinner puissanceSpinner = new JSpinner(new SpinnerNumberModel(modele.getPuissance(), 1, 1000, 1));
+
+        // Préparer les catégories avec des cases à cocher
+        JPanel categoriesPanel = new JPanel(new GridLayout(1, 4));
+        JCheckBox[] categoriesCheckBoxes = new JCheckBox[Categorie.categories.length];
+
+        for (int i = 0; i < Categorie.categories.length; i++) {
+            categoriesCheckBoxes[i] = new JCheckBox(Categorie.categories[i]);
+            // Cocher les catégories déjà associées au modèle
+            for (Categorie cat : modele.getCategories()) {
+                if (cat.getCategorie().equals(Categorie.categories[i])) {
+                    categoriesCheckBoxes[i].setSelected(true);
                     break;
                 }
             }
-            if (modeleRef[0] != null) break;
+            categoriesPanel.add(categoriesCheckBoxes[i]);
         }
 
-        if (modeleRef[0] == null) {
-            JOptionPane.showMessageDialog(view,
-                "Modèle non trouvé",
-                "Erreur",
-                JOptionPane.ERROR_MESSAGE);
+        JPanel panel = new JPanel(new GridLayout(5, 2));
+        panel.add(new JLabel("Nom :"));
+        panel.add(nomField);
+        panel.add(new JLabel("Marque :"));
+        panel.add(marqueField);
+        panel.add(new JLabel("Puissance :"));
+        panel.add(puissanceSpinner);
+        panel.add(new JLabel("Catégories :"));
+        panel.add(new JScrollPane(categoriesPanel)); 
+
+        int result = JOptionPane.showConfirmDialog(view, panel, "Modifier un Modèle", JOptionPane.OK_CANCEL_OPTION);
+        if (result == JOptionPane.OK_OPTION) {
+            try {
+                int puissance = (int) puissanceSpinner.getValue();
+
+                // Récupérer les catégories sélectionnées
+                Vector<Categorie> categories = new Vector<>();
+                for (int i = 0; i < categoriesCheckBoxes.length; i++) {
+                    if (categoriesCheckBoxes[i].isSelected()) {
+                        categories.add(new Categorie(Categorie.categories[i]));
+                    }
+                }
+
+                // Mettre à jour les informations du modèle
+                modele.setPuissance(puissance);
+                modele.setCategories(categories);
+
+                // Mettre à jour la table
+                updateModeleTable();
+                JOptionPane.showMessageDialog(view, "Modèle modifié avec succès !");
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(view, "Erreur : " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    private void supprimerModele() {
+        int selectedRow = view.getModeleTable().getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(view, "Veuillez sélectionner un modèle à supprimer.");
             return;
         }
 
-        JDialog dialog = new JDialog((Frame)SwingUtilities.getWindowAncestor(view), "Modifier un Modèle", true);
-        dialog.setSize(400, 500);
-        dialog.setLocationRelativeTo(view);
+        // Récupérer les informations du modèle sélectionné
+        String modeleNom = (String) view.getModeleTable().getValueAt(selectedRow, 0);
+        String marqueNom = (String) view.getModeleTable().getValueAt(selectedRow, 1);
 
-        JPanel panel = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+        // Trouver le modèle et sa marque
+        Modele modele = null;
+        Marque marque = parc.rechercherMarque(marqueNom);
 
-        // Titre
-        JLabel titleLabel = new JLabel("Modifier Modèle");
-        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.gridwidth = 2;
-        panel.add(titleLabel, gbc);
-
-        // Nom (en lecture seule)
-        gbc.gridy = 1;
-        gbc.gridwidth = 1;
-        JLabel nomLabel = new JLabel("Nom :");
-        panel.add(nomLabel, gbc);
-        
-        gbc.gridx = 1;
-        JTextField nomField = new JTextField(modeleRef[0].getNom(), 20);
-        nomField.setEditable(false);  // Rendu non modifiable
-        panel.add(nomField, gbc);
-
-        // Marque (en lecture seule)
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        JLabel marqueLabel = new JLabel("Marque :");
-        panel.add(marqueLabel, gbc);
-        
-        gbc.gridx = 1;
-        JComboBox<Marque> marqueCombo = new JComboBox<>(parc.getMarques().toArray(new Marque[0]));
-        marqueCombo.setSelectedItem(modeleRef[0].getMarque());
-        marqueCombo.setEnabled(false);  // Rendu non modifiable
-        marqueCombo.setRenderer(new DefaultListCellRenderer() {
-            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-                if (value instanceof Marque) {
-                    setText(((Marque) value).getNom());
-                }
-                return this;
-            }
-        });
-        panel.add(marqueCombo, gbc);
-
-        // Puissance
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        JLabel puissanceLabel = new JLabel("Puissance (CV) :");
-        panel.add(puissanceLabel, gbc);
-        
-        gbc.gridx = 1;
-        JSpinner puissanceSpinner = new JSpinner(new SpinnerNumberModel(modeleRef[0].getPuissance(), 1, 1000, 1));
-        panel.add(puissanceSpinner, gbc);
-
-        // Catégories
-        gbc.gridx = 0;
-        gbc.gridy = 4;
-        JLabel categoriesLabel = new JLabel("Catégories :");
-        panel.add(categoriesLabel, gbc);
-        
-        gbc.gridx = 1;
-        // Récupérer toutes les catégories uniques à partir des modèles existants
-        Vector<Categorie> categories = new Vector<>();
-        for (Marque marque : parc.getMarques()) {
-            for (Modele m : marque.getModeles()) {
-                for (Categorie categorie : m.getCategories()) {
-                    if (!categories.contains(categorie)) {
-                        categories.add(categorie);
-                    }
+        if (marque != null) {
+            for (Modele mod : marque.getModeles()) {
+                if (mod.getNom().equals(modeleNom)) {
+                    modele = mod;
+                    break;
                 }
             }
         }
-        JComboBox<Categorie> categoriesCombo = new JComboBox<>(categories.toArray(new Categorie[0]));
-        categoriesCombo.setRenderer(new DefaultListCellRenderer() {
-            @Override
-            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-                if (value instanceof Categorie) {
-                    setText(((Categorie) value).getCategorie());
-                }
-                return this;
-            }
-        });
-        panel.add(categoriesCombo, gbc);
-
-        // Boutons
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        JButton saveButton = new JButton("Enregistrer");
-        JButton cancelButton = new JButton("Annuler");
-
-        saveButton.addActionListener(e -> {
-            try {
-                int puissance = (Integer) puissanceSpinner.getValue();
-                Categorie selectedCategorie = (Categorie) categoriesCombo.getSelectedItem();
-                Vector<Categorie> selectedCategories = new Vector<>();
-                selectedCategories.add(selectedCategorie);
-
-                if (selectedCategories.isEmpty()) {
-                    throw new Exception("Veuillez sélectionner au moins une catégorie");
-                }
-
-                modeleRef[0].setPuissance(puissance);
-                modeleRef[0].setCategories(selectedCategories);
-                
-                updateModeleList();
-                dialog.dispose();
-                
-                JOptionPane.showMessageDialog(dialog,
-                    "Modèle modifié avec succès",
-                    "Succès",
-                    JOptionPane.INFORMATION_MESSAGE);
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(dialog,
-                    "Erreur: " + ex.getMessage(),
-                    "Erreur",
-                    JOptionPane.ERROR_MESSAGE);
-            }
-        });
-
-        cancelButton.addActionListener(e -> dialog.dispose());
-
-        buttonPanel.add(saveButton);
-        buttonPanel.add(cancelButton);
-
-        gbc.gridx = 0;
-        gbc.gridy = 5;
-        gbc.gridwidth = 2;
-        panel.add(buttonPanel, gbc);
-
-        dialog.add(panel);
-        dialog.setVisible(true);
-    }
-
-    public void deleteModele() {
-        String selectedNom = view.getSelectedModeleNom();
-        if (selectedNom == null) return;
-
-        int confirm = JOptionPane.showConfirmDialog(
-            SwingUtilities.getWindowAncestor(view),
-            "Êtes-vous sûr de vouloir supprimer ce modèle ?",
-            "Confirmation de suppression",
-            JOptionPane.YES_NO_OPTION
-        );
+        // Demander confirmation avant de supprimer
+        int confirm = JOptionPane.showConfirmDialog(view,
+                "Êtes-vous sûr de vouloir supprimer le modèle \"" + modele.getNom() + "\" et tous les scooters associés ?",
+                "Confirmation",
+                JOptionPane.YES_NO_OPTION);
 
         if (confirm == JOptionPane.YES_OPTION) {
-            try {
-                for (Marque marque : parc.getMarques()) {
-                    for (Modele modele : marque.getModeles()) {
-                        if (modele.getNom().equals(selectedNom)) {
-                            marque.retirerModele(modele);
-                            updateModeleList();
-                            return;
-                        }
-                    }
-                }
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(view,
-                    "Erreur lors de la suppression: " + ex.getMessage(),
-                    "Erreur",
-                    JOptionPane.ERROR_MESSAGE);
+            // Supprimer tous les scooters associés au modèle
+            Vector<Scooter> scootersASupprimer = modele.getScooters();
+            for (Scooter scooter : scootersASupprimer) {
+                parc.supprimerScooter(scooter); // Supprime le scooter du parc et gère les locations
             }
+            for (Categorie cat : modele.getCategories()){
+                cat.retirerModele(modele);
+            }
+            // Supprimer le modèle de la liste des modèles de la marque
+            marque.retirerModele(modele);
+
+            // Mettre à jour la table des modèles
+            updateModeleTable();
+            
+            // Synchroniser les autres fenêtres (par exemple, la fenêtre des scooters)
+            JOptionPane.showMessageDialog(view, "Modèle et scooters associés supprimés avec succès !");
         }
     }
 
-    public void searchModeles(String searchText) {
-        if (searchText == null || searchText.trim().isEmpty()) {
-            updateModeleList();
+    private void rechercherModele() {
+        String searchText = view.getSearchField().getText().toLowerCase().trim();
+    
+        if (searchText.isEmpty()) {
+           updateModeleTable();
             return;
         }
-
-        Vector<Modele> filteredModeles = new Vector<>();
+    
+        // Définir les colonnes de la table
+        String[] columns = {"Nom", "Marque", "Puissance", "Catégories"};
+        Vector<String[]> data = new Vector<>();
+    
+        // Parcourir les marques et modèles pour trouver les correspondances
         for (Marque marque : parc.getMarques()) {
             for (Modele modele : marque.getModeles()) {
-                if (modele.getNom().toLowerCase().contains(searchText.toLowerCase()) ||
-                    modele.getMarque().getNom().toLowerCase().contains(searchText.toLowerCase())) {
-                    filteredModeles.add(modele);
+                if (modele.getNom().toLowerCase().equals(searchText) || 
+                    marque.getNom().toLowerCase().equals(searchText)) {
+                    
+                    String[] row = new String[columns.length];
+                    row[0] = modele.getNom();
+                    row[1] = marque.getNom();
+                    row[2] = String.valueOf(modele.getPuissance()) + " Chevaux";
+    
+                    Vector<String> catgrs = new Vector<>();
+                    for (Categorie cat : modele.getCategories()) {
+                        catgrs.add(cat.getCategorie());
+                    }
+                    row[3] = String.valueOf(catgrs);
+    
+                    data.add(row);
                 }
             }
         }
-        view.updateModeleTable(filteredModeles);
+    
+        if (data.isEmpty()) {
+            JOptionPane.showMessageDialog(view, "Aucun modèle trouvé pour la recherche : " + searchText);
+            return;
+        }
+    
+        // Convertir les données en tableau
+        String[][] tableData = data.toArray(new String[0][]);
+    
+        // Mettre à jour la table avec les résultats de la recherche
+        DefaultTableModel model = new DefaultTableModel(tableData, columns) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Empêcher l'édition des cellules
+            }
+        };
+    
+        view.getModeleTable().setModel(model);
     }
+
+   
 }
