@@ -9,12 +9,23 @@ public class RetourView extends JFrame {
     private JButton searchButton;
     private JButton deleteButton;
     private JTextField searchField;
+    private JTextField dateFilterField;
+    private JButton filterButton;
 
     public RetourView() {
         setTitle("Gestion des Retours");
         setSize(500, 300);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
+        
+        JPanel filterPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        dateFilterField = new JTextField(10);
+        filterButton = new JButton("Filtrer");
+
+        filterPanel.add(new JLabel("Date de retour (AAAA-MM-JJ):"));
+        filterPanel.add(dateFilterField);
+        filterPanel.add(filterButton);
+        add(filterPanel, BorderLayout.NORTH);
 
         // Initialiser le tableau
         retourTable = new JTable();
@@ -65,5 +76,14 @@ public class RetourView extends JFrame {
     public JTextField getSearchField() {
         return searchField;
     }
+
+    public JButton getFilterButton() {
+        return filterButton;
+    }
+    
+    public JTextField getDateFilterField() {
+        return dateFilterField;
+    }
+
 
 }
