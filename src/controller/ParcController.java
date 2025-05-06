@@ -31,6 +31,7 @@ public class ParcController implements ActionListener {
         view.getGestionMarquesBtn().addActionListener(this);
         view.getGestionLocationsBtn().addActionListener(this);
         view.getGestionRetoursBtn().addActionListener(this);
+        view.getExitBtn().addActionListener(e -> System.exit(0));
     }
 
     @Override

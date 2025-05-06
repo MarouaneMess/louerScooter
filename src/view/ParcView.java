@@ -14,6 +14,7 @@ public class ParcView extends JFrame {
     private JButton gestionMarquesBtn;
     private JButton gestionLocationsBtn;
     private JButton gestionRetoursBtn;
+    private JButton exitBtn;
     private Parc parc;
     private JTable resumeTable;
 
@@ -52,6 +53,8 @@ public class ParcView extends JFrame {
         gestionMarquesBtn = new JButton("Gestion des Marques");
         gestionLocationsBtn = new JButton("Gestion des Locations");
         gestionRetoursBtn = new JButton("Gestion des Retours");
+        exitBtn = new JButton("Quitter");
+        
 
         // Style des boutons
         Font buttonFont = new Font("Arial", Font.PLAIN, 12);
@@ -59,7 +62,8 @@ public class ParcView extends JFrame {
 
         JButton[] buttons = {
             afficherResumeBtn, gestionScootersBtn, gestionClientsBtn,
-            gestionModelesBtn, gestionMarquesBtn, gestionLocationsBtn, gestionRetoursBtn
+            gestionModelesBtn, gestionMarquesBtn, gestionLocationsBtn, gestionRetoursBtn,
+            exitBtn
         };
 
         for (JButton button : buttons) {
@@ -88,6 +92,13 @@ public class ParcView extends JFrame {
 
         JScrollPane scrollPane = new JScrollPane(resumeTable);
         resumePanel.add(scrollPane, BorderLayout.CENTER);
+
+        JPanel exitPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        exitBtn.setFont(new Font("Arial", Font.PLAIN, 12));
+        exitPanel.add(exitBtn);
+
+        resumePanel.add(exitPanel, BorderLayout.SOUTH);
+
 
         // Ajout des panels au panel central
         centerPanel.add(boutonsPanel, BorderLayout.WEST);
@@ -128,6 +139,9 @@ public class ParcView extends JFrame {
 
     public JButton getGestionRetoursBtn() {
         return gestionRetoursBtn;
+    }
+    public JButton getExitBtn() {
+        return exitBtn;
     }
 
     // Méthode pour mettre à jour le résumé
