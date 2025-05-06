@@ -80,11 +80,20 @@ public class Location {
         scooter.setKm(scooter.getKm() + kmEffectue);
         scooter.setDisponible(true);
     }
+    public void supprimerRetour() {
+        if (retour != null) {
+            scooter.setKm(scooter.getKm() - retour.getKmEffectue());
+            retour = null;
+            scooter.setDisponible(false);
+        } else {
+            throw new IllegalArgumentException("Aucun retour enregistré pour cette location.");
+        }
+    }
 
 
     public double getPrixPinalite() {
         if (retour == null || retour.getDateRetourEffective() == null) {
-            throw new IllegalStateException("Le retour doit être enregistré avant de calculer les pénalités.");
+            return 0;
         }
     
         if (retour.getDateRetourEffective().isAfter(dateRetourPrevue)) {
@@ -100,9 +109,9 @@ public class Location {
     // le prix total de la location
     // ChronoUnit is an enumeration in the java.time.temporal package that provides a standard set of date and time units
     public double getPrixLocation() {
-        if (retour == null) {
-            throw new IllegalStateException("Le retour n'a pas encore été enregistré.");
-        }
+        // if (retour == null) 
+        //a verifier si on ajoute le prix apres le retour et mettre prix location 0 sans retour;
+        // ou on affiche le prix location avant le retour et on fait update apres le retour
 
         long nbrJours = ChronoUnit.DAYS.between(dateDebut, dateRetourPrevue);
         return nbrJours * scooter.getPrixJour() + getPrixPinalite();

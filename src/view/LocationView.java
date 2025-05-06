@@ -5,7 +5,9 @@ import java.awt.*;
 
 public class LocationView extends JFrame {
     private JTable locationTable;
+    private JButton mettreAJourButton;
     private JButton addButton;
+    private JButton saveReturnButton;
     private JButton deleteButton;
     private JButton searchButton;
     private JTextField searchField;
@@ -13,7 +15,7 @@ public class LocationView extends JFrame {
 
     public LocationView() {
         setTitle("Gestion des Locations");
-        setSize(800, 400);
+        setSize(900, 400);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
 
@@ -36,9 +38,13 @@ public class LocationView extends JFrame {
 
         // // Panneau des boutons
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        mettreAJourButton = new JButton("Mettre à jour");
         addButton = new JButton("Ajouter");
+        saveReturnButton = new JButton("Enregistrer Retour");
         deleteButton = new JButton("Supprimer");
+        buttonPanel.add(mettreAJourButton);
         buttonPanel.add(addButton);
+        buttonPanel.add(saveReturnButton);
         buttonPanel.add(deleteButton);
         actionPanel.add(buttonPanel, BorderLayout.SOUTH);
         add(actionPanel, BorderLayout.SOUTH);
@@ -49,8 +55,16 @@ public class LocationView extends JFrame {
         return locationTable;
     }
 
+    public JButton getMettreAJourButton() {
+        return mettreAJourButton;
+    }
+
     public JButton getAddButton() {
         return addButton;
+    }
+
+    public JButton getSaveReturnButton(){
+        return saveReturnButton;
     }
 
     public JButton getDeleteButton() {
@@ -68,4 +82,5 @@ public class LocationView extends JFrame {
     public JComboBox<String> getFilterComboBox() {
         return filterComboBox;
     }
+
 }

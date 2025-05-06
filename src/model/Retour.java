@@ -18,7 +18,7 @@ public class Retour {
         if (dateRetourEffective == null) {
             throw new IllegalArgumentException("La date de retour effective ne peut pas être null.");
         }
-        if (dateRetourEffective.isBefore(location.getDateDebut()) || dateRetourEffective.isAfter(LocalDate.now())) {
+        if (dateRetourEffective.isBefore(location.getDateDebut()) ) {
             throw new IllegalArgumentException("La date de retour effective est fausse.");
         }
 

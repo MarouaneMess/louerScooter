@@ -18,7 +18,9 @@ public class LocationController implements ActionListener {
         this.view = view;
         this.parc = parc;
 
+        view.getMettreAJourButton().addActionListener(this);
         view.getAddButton().addActionListener(this);
+        view.getSaveReturnButton().addActionListener(this);
         view.getDeleteButton().addActionListener(this);
         view.getSearchButton().addActionListener(this);
 
@@ -28,8 +30,12 @@ public class LocationController implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == view.getAddButton()) {
+        if (e.getSource() == view.getMettreAJourButton()) {
+            updateLocationTable();
+        } else if (e.getSource() == view.getAddButton()) {
             ajouterLocation();
+        } else if (e.getSource() == view.getSaveReturnButton()) {
+            enregistrerRetourLocation();
         } else if (e.getSource() == view.getDeleteButton()) {
             supprimerLocation();
         } else if (e.getSource() == view.getSearchButton()) {
@@ -38,7 +44,7 @@ public class LocationController implements ActionListener {
     }
 
     private void updateLocationTable() {
-        String[] columns = {"ID", "Num Permis Client", "Nom Client", "Scooter", "Date Début", "Date Retour Prévue", "Retour"};
+        String[] columns = {"ID", "Permis Client", "Client", "Scooter", "Date Début", "Date Retour Prévue", "Prix", "Retour tardif"};
         Vector<String[]> data = new Vector<>();
 
         // Parcourir tous les clients pour récupérer leurs locations
@@ -51,7 +57,9 @@ public class LocationController implements ActionListener {
                     location.getScooter().getId(),
                     location.getDateDebut().toString(),
                     location.getDateRetourPrevue().toString(),
-                    (location.getRetour() != null) ? "Oui" : "Non"
+                    String.valueOf(location.getPrixLocation()),
+                    location.getRetour() == null ?"Pas de Retour" : 
+                    (location.getRetour().getDateRetourEffective().isAfter(location.getDateRetourPrevue())) ? "Oui" : "Non"
                 });
             }
         }
@@ -122,6 +130,51 @@ public class LocationController implements ActionListener {
             // Mettre à jour la table des locations
             updateLocationTable();
             JOptionPane.showMessageDialog(view, "Location ajoutée avec succès !");
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(view, "Erreur : " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    private void enregistrerRetourLocation() {
+        int selectedRow = view.getLocationTable().getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(view, "Veuillez sélectionner une location à retourner.");
+            return;
+        }
+
+        try {
+            // Récupérer l'ID de la location sélectionnée
+            int locationId = Integer.parseInt((String) view.getLocationTable().getValueAt(selectedRow, 0));
+
+            JPanel panel = new JPanel(new java.awt.GridLayout(2, 2));
+            JTextField dateRetourField = new JTextField(10);
+            JTextField kmParcourusField = new JTextField(10);
+            panel.add(new JLabel("Date de retour (AAAA-MM-JJ) :"));
+            panel.add(dateRetourField);
+            panel.add(new JLabel("Kilomètres parcourus :"));
+            panel.add(kmParcourusField);
+            // on doit verifier que la location existe et que le retour n'est pas encore fait
+            Location location = null;
+            for (Client client : parc.getClients()) {
+                for (Location loc : client.getLocations()) {
+                    if (loc.getId() == locationId) {
+                        location = loc;
+                        break;
+                    }
+                }  
+            }
+            if (location != null && location.getRetour() == null) {
+                int option = JOptionPane.showConfirmDialog(view, panel, "Retour de Location", JOptionPane.OK_CANCEL_OPTION);
+                if (option == JOptionPane.OK_OPTION) {
+                    LocalDate dateRetour = LocalDate.parse(dateRetourField.getText());
+                    int kmParcourus = Integer.parseInt(kmParcourusField.getText());
+                    location.enregistrerRetour(kmParcourus, dateRetour);
+                    JOptionPane.showMessageDialog(view, "Retour enregistré avec succès !");
+                } else {
+                    JOptionPane.showMessageDialog(view, "Retour annulé.");
+                }
+            } else {
+                JOptionPane.showMessageDialog(view, "Retour effectué déjà.");
+            }
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(view, "Erreur : " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
         }

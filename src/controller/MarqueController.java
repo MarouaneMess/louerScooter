@@ -18,6 +18,7 @@ public class MarqueController implements ActionListener {
         this.parc = parc;
 
         // Attacher les écouteurs aux boutons
+        view.getMettreAJourButton().addActionListener(this);
         view.getAddButton().addActionListener(this);
         view.getEditButton().addActionListener(this);
         view.getDeleteButton().addActionListener(this);
@@ -29,7 +30,9 @@ public class MarqueController implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == view.getAddButton()) {
+        if (e.getSource() == view.getMettreAJourButton()) {
+            updateMarqueTable();
+        } else if (e.getSource() == view.getAddButton()) {
             ajouterMarque();
         } else if (e.getSource() == view.getEditButton()) {
             modifierMarque();

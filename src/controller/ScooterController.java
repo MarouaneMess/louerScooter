@@ -21,6 +21,7 @@ public class ScooterController implements ActionListener {
         this.parc = parc;
 
         // Attacher les écouteurs aux boutons
+        view.getMettreAJourButton().addActionListener(this);
         view.getAddButton().addActionListener(this);
         view.getEditButton().addActionListener(this);
         view.getDeleteButton().addActionListener(this);
@@ -32,7 +33,10 @@ public class ScooterController implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == view.getAddButton()) {
+        
+        if (e.getSource() == view.getMettreAJourButton()) {
+            updateScooterTable();
+        } else if (e.getSource() == view.getAddButton()) {
             ajouterScooter();
         } else if (e.getSource() == view.getEditButton()) {
             modifierScooter();

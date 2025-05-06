@@ -3,46 +3,42 @@ package view;
 import javax.swing.*;
 import java.awt.*;
 
-public class MarqueView extends JFrame {
-    private JTable marqueTable;
+public class RetourView extends JFrame {
+    private JTable retourTable;
     private JButton mettreAJourButton;
-    private JButton addButton;
-    private JButton editButton;
-    private JButton deleteButton;
     private JButton searchButton;
+    private JButton deleteButton;
     private JTextField searchField;
 
-    public MarqueView() {
-        setTitle("Gestion des Marques");
-        setSize(700, 400);
+    public RetourView() {
+        setTitle("Gestion des Retours");
+        setSize(500, 300);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
 
         // Initialiser le tableau
-        marqueTable = new JTable();
-        JScrollPane tableScrollPane = new JScrollPane(marqueTable);
+        retourTable = new JTable();
+        JScrollPane tableScrollPane = new JScrollPane(retourTable);
         add(tableScrollPane, BorderLayout.CENTER);
 
+        // Panneau d'actions
         JPanel actionPanel = new JPanel(new BorderLayout());
 
-        // Champ de recherche
+        // Panneau de recherche
         JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         searchField = new JTextField(20);
         searchButton = new JButton("Rechercher");
+        // recherche juste par id location
         searchPanel.add(new JLabel("Recherche :"));
         searchPanel.add(searchField);
         searchPanel.add(searchButton);
         actionPanel.add(searchPanel, BorderLayout.NORTH);
 
-        // Boutons d'action
+        // Panneau des boutons
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         mettreAJourButton = new JButton("Mettre à jour");
-        addButton = new JButton("Ajouter");
-        editButton = new JButton("Modifier");
         deleteButton = new JButton("Supprimer");
         buttonPanel.add(mettreAJourButton);
-        buttonPanel.add(addButton);
-        buttonPanel.add(editButton);
         buttonPanel.add(deleteButton);
         actionPanel.add(buttonPanel, BorderLayout.SOUTH);
 
@@ -50,30 +46,24 @@ public class MarqueView extends JFrame {
     }
 
     // Getters pour accéder aux composants
-    public JTable getMarqueTable() {
-        return marqueTable;
+    public JTable getRetourTable() {
+        return retourTable;
     }
+
     public JButton getMettreAJourButton() {
         return mettreAJourButton;
-    }
-    
-    public JButton getAddButton() {
-        return addButton;
-    }
-
-    public JButton getEditButton() {
-        return editButton;
-    }
-
-    public JButton getDeleteButton() {
-        return deleteButton;
     }
 
     public JButton getSearchButton() {
         return searchButton;
     }
 
+    public JButton getDeleteButton() {
+        return deleteButton;
+    }
+
     public JTextField getSearchField() {
         return searchField;
     }
+
 }

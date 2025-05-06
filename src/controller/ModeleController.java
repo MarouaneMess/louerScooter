@@ -23,6 +23,7 @@ public class ModeleController implements ActionListener {
         this.parc = parc;
 
         // Attacher les écouteurs aux boutons
+        view.getMettreAJourButton().addActionListener(this);
         view.getAddButton().addActionListener(this);
         view.getEditButton().addActionListener(this);
         view.getDeleteButton().addActionListener(this);
@@ -35,7 +36,9 @@ public class ModeleController implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == view.getAddButton()) {
+        if (e.getSource() == view.getMettreAJourButton()) {
+            updateModeleTable();
+        } else if (e.getSource() == view.getAddButton()) {
             ajouterModele();
         } else if (e.getSource() == view.getEditButton()) {
             modifierModele();

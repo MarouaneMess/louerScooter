@@ -5,6 +5,7 @@ import java.awt.*;
 
 public class ModeleView extends JFrame {
     private JTable modeleTable;
+    private JButton mettreAJourButton;
     private JButton addButton;
     private JButton editButton;
     private JButton deleteButton;
@@ -39,9 +40,11 @@ public class ModeleView extends JFrame {
 
         // Boutons d'action
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        mettreAJourButton = new JButton("Mettre à jour");
         addButton = new JButton("Ajouter");
         editButton = new JButton("Modifier");
         deleteButton = new JButton("Supprimer");
+        buttonPanel.add(mettreAJourButton);
         buttonPanel.add(addButton);
         buttonPanel.add(editButton);
         buttonPanel.add(deleteButton);
@@ -53,6 +56,10 @@ public class ModeleView extends JFrame {
     // Getters pour accéder aux composants
     public JTable getModeleTable() {
         return modeleTable;
+    }
+
+    public JButton getMettreAJourButton() {
+        return mettreAJourButton;
     }
 
     public JButton getAddButton() {

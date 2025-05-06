@@ -42,7 +42,7 @@ public class Main {
 
         // Ajout de scooters fictifs
         Scooter scooter1 =new Scooter("123ABC", modele1, LocalDate.of(2022, 1, 1), true, 5000, 25, parc);
-        Scooter scooter2 =new Scooter("456DEF", modele2, LocalDate.of(2021, 1, 1), false, 10000, 30, parc);
+        Scooter scooter2 =new Scooter("456DEF", modele2, LocalDate.of(2021, 1, 1), true, 10000, 30, parc);
         Scooter scooter3 =new Scooter("1111", modele2, LocalDate.of(2023, 1, 1), true, 10000, 300, parc);
         parc.ajouterScooter(scooter1);
         parc.ajouterScooter(scooter2);

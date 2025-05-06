@@ -5,6 +5,7 @@ import view.LocationView;
 import view.MarqueView;
 import view.ModeleView;
 import view.ParcView;
+import view.RetourView;
 import view.ScooterView;
 import java.awt.event.ActionListener;
 
@@ -93,8 +94,9 @@ public class ParcController implements ActionListener {
 
     // Méthode pour ouvrir la gestion des retours
     private void ouvrirGestionRetours() {
-        System.out.println("Ouverture de la gestion des retours");
-        // TODO: Implémenter la logique pour ouvrir la vue de gestion des retours
+         RetourView retourView = new RetourView();
+         new RetourController(retourView, parc);
+         retourView.setVisible(true);
     }
 
     // Méthode pour mettre à jour les données du résumé
