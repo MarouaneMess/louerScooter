@@ -47,7 +47,7 @@ public class LocationController implements ActionListener {
                 data.add(new String[]{
                     String.valueOf(location.getId()),
                     String.valueOf(client.getNumPermis()),
-                    String.valueOf(client.getNumPermis()),
+                    client.getNom() +" "+ client .getPrenom(),
                     location.getScooter().getId(),
                     location.getDateDebut().toString(),
                     location.getDateRetourPrevue().toString(),
@@ -117,7 +117,7 @@ public class LocationController implements ActionListener {
             
 
             // Créer la location
-            Location location = new Location(client, scooter, dateDebut, dateRetourPrevue);
+            new Location(client, scooter, dateDebut, dateRetourPrevue);
             
             // Mettre à jour la table des locations
             updateLocationTable();
@@ -180,36 +180,28 @@ public class LocationController implements ActionListener {
         Vector<String[]> resultats = new Vector<>();
 
         // Filtrer par client ou scooter
-        if (filterType.equals("Par Client")) {
+        if (filterType.equals("Par Id Client")) {
             for (Client client : parc.getClients()) {
-                if (client.getNom().toLowerCase().equals(searchText)||
-                client.getNumPermis()==Integer.parseInt(searchText)) {
+                if(client.getNumPermis()==Integer.parseInt(searchText)) {
                     for (Location location : client.getLocations()) {
-                        resultats.add(new String[]{
-                            String.valueOf(location.getId()),
-                            String.valueOf(client.getNumPermis()),
-                            client.getNom(),
-                            location.getScooter().getId(),
-                            location.getDateDebut().toString(),
-                            location.getDateRetourPrevue().toString(),
-                            (location.getRetour() != null) ? "Oui" : "Non"
-                        });
+                        resultats.add(formatLocation(location));
                     }
                 }
             }
-        } else if (filterType.equals("Par Scooter")) {
+        } else if (filterType.equals("Par Id Scooter")) {
             for (Scooter scooter : parc.getScooters()) {
-                if (scooter.getId().toLowerCase().contains(searchText)) {
+                if (scooter.getId().toLowerCase().equals(searchText)) {
                     for (Location location : scooter.getLocations()) {
-                        resultats.add(new String[]{
-                            String.valueOf(location.getId()),
-                            String.valueOf(location.getClient().getNumPermis()),
-                            location.getClient().getNom(),
-                            scooter.getId(),
-                            location.getDateDebut().toString(),
-                            location.getDateRetourPrevue().toString(),
-                            (location.getRetour() != null) ? "Oui" : "Non"
-                        });
+                        resultats.add(formatLocation(location));
+                    }
+                }
+            }
+        }else if (filterType.equals("Par Id Location")) {
+            int locationId = Integer.parseInt(searchText); 
+            for (Client client : parc.getClients()) {
+                for (Location location : client.getLocations()) {
+                    if (location.getId() == locationId) {
+                        resultats.add(formatLocation(location));
                     }
                 }
             }
@@ -231,5 +223,16 @@ public class LocationController implements ActionListener {
 
         view.getLocationTable().setModel(model);
     }
-}
 
+    private String[] formatLocation(Location location) {
+        return new String[]{
+            String.valueOf(location.getId()),
+            String.valueOf(location.getClient().getNumPermis()),
+            location.getClient().getNom() + " " + location.getClient().getPrenom(),
+            location.getScooter().getId(),
+            location.getDateDebut().toString(),
+            location.getDateRetourPrevue().toString(),
+            (location.getRetour() != null) ? "Oui" : "Non"
+        };
+    }
+}

@@ -22,16 +22,18 @@ public class MarqueView extends JFrame {
         JScrollPane tableScrollPane = new JScrollPane(marqueTable);
         add(tableScrollPane, BorderLayout.CENTER);
 
-        // Panneau de recherche
+        JPanel actionPanel = new JPanel(new BorderLayout());
+
+        // Champ de recherche
         JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         searchField = new JTextField(20);
         searchButton = new JButton("Rechercher");
         searchPanel.add(new JLabel("Recherche :"));
         searchPanel.add(searchField);
         searchPanel.add(searchButton);
-        add(searchPanel, BorderLayout.NORTH);
+        actionPanel.add(searchPanel, BorderLayout.NORTH);
 
-        // Panneau des boutons
+        // Boutons d'action
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         addButton = new JButton("Ajouter");
         editButton = new JButton("Modifier");
@@ -39,7 +41,9 @@ public class MarqueView extends JFrame {
         buttonPanel.add(addButton);
         buttonPanel.add(editButton);
         buttonPanel.add(deleteButton);
-        add(buttonPanel, BorderLayout.SOUTH);
+        actionPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+        add(actionPanel, BorderLayout.SOUTH);
     }
 
     // Getters pour accéder aux composants

@@ -22,24 +22,26 @@ public class LocationView extends JFrame {
         JScrollPane tableScrollPane = new JScrollPane(locationTable);
         add(tableScrollPane, BorderLayout.CENTER);
 
-        // Panneau de recherche
+        JPanel actionPanel = new JPanel(new BorderLayout());
+        // // Panneau de recherche
         JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         searchField = new JTextField(20);
         searchButton = new JButton("Rechercher");
-        filterComboBox = new JComboBox<>(new String[]{"Par Client", "Par Scooter"});
+        filterComboBox = new JComboBox<>(new String[]{"Par Id Client", "Par id Scooter", "Par Id Location"});
         searchPanel.add(new JLabel("Recherche :"));
         searchPanel.add(searchField);
         searchPanel.add(filterComboBox);
         searchPanel.add(searchButton);
-        add(searchPanel, BorderLayout.NORTH);
+        actionPanel.add(searchPanel, BorderLayout.NORTH);
 
-        // Panneau des boutons
+        // // Panneau des boutons
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         addButton = new JButton("Ajouter");
         deleteButton = new JButton("Supprimer");
         buttonPanel.add(addButton);
         buttonPanel.add(deleteButton);
-        add(buttonPanel, BorderLayout.SOUTH);
+        actionPanel.add(buttonPanel, BorderLayout.SOUTH);
+        add(actionPanel, BorderLayout.SOUTH);
     }
 
     // Getters pour accéder aux composants
