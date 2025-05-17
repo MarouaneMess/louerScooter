@@ -1,8 +1,10 @@
 package model;
 
+import java.io.Serializable;
 import java.util.Vector;
 
-public class Categorie {
+public class Categorie implements Serializable {
+    private static final long serialVersionUID = 1L; // Version de la classe pour la sérialisation
     public static final String[] categories = {
         "A1", "A2", "A", "AM"
     };

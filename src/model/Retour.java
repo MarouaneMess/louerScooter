@@ -1,8 +1,9 @@
 package model;
-
+import java.io.Serializable;
 import java.time.LocalDate;
 
-public class Retour { 
+public class Retour implements Serializable {
+    private static final long serialVersionUID = 1L; // Version de la classe pour la sérialisation
     private final int idLoc;
     private final Location location;
     private final double kmEffectue;

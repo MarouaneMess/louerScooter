@@ -1,9 +1,10 @@
 package model;
-
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Vector;
 
-public class Scooter {
+public class Scooter implements Serializable {
+    private static final long serialVersionUID = 1L; // Version de la classe pour la sérialisation
     private String immatriculation;
     private Modele modele;
     private LocalDate annee_sortie;

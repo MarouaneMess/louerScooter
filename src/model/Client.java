@@ -1,9 +1,11 @@
 package model;
-
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Vector;
 
-public class Client { 
+public class Client implements Serializable {
+    private static final long serialVersionUID = 1L;// Version de la classe pour la sérialisation
+
     private int numPermis;
     private String nom;
     private String prenom;

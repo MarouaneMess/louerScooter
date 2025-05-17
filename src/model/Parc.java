@@ -1,10 +1,12 @@
 package model;
 
+import java.io.Serializable;
 import java.util.Vector;
 import java.time.LocalDate;
 
-public class Parc {
-    private static int auto_inc = 0;
+public class Parc implements Serializable {
+    private static final long serialVersionUID = 1L; // Version de la classe pour la sérialisation
+    private static transient int auto_inc = 0; // transient pour éviter la sérialisation
     private int id;
     private String adresse;
     private Vector<Scooter> scooters;

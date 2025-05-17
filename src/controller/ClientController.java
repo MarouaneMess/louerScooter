@@ -83,7 +83,7 @@ public class ClientController implements ActionListener {
         JTextField numPermisField = new JTextField();
         JTextField nomField = new JTextField();
         JTextField prenomField = new JTextField();
-        JTextField dateNaissanceField = new JTextField("AAAA-MM-JJ");
+        JTextField dateNaissanceField = new JTextField();
         JTextField adresseField = new JTextField();
 
         JPanel categoriesPanel = new JPanel(new GridLayout(1, 4));
@@ -101,7 +101,7 @@ public class ClientController implements ActionListener {
         panel.add(nomField);
         panel.add(new JLabel("Prénom :"));
         panel.add(prenomField);
-        panel.add(new JLabel("Date de Naissance :"));
+        panel.add(new JLabel("Date de Naissance AAAA-MM-JJ :"));
         panel.add(dateNaissanceField);
         panel.add(new JLabel("Adresse :"));
         panel.add(adresseField);

@@ -1,4 +1,0 @@
-dans Location:
-        //a verifier si on ajoute le prix apres le retour et mettre prix location 0 sans retour;
-        // ou on affiche le prix location avant le retour et on fait update apres le retour
- 

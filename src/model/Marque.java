@@ -1,8 +1,9 @@
 package model;
-
+import java.io.Serializable;
 import java.util.Vector;
 
-public class Marque {
+public class Marque implements Serializable {
+    private static final long serialVersionUID = 1L; // Version de la classe pour la sérialisation
     private String nom;
     private Parc parc;
     private Vector<Modele> modeles; 

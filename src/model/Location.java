@@ -1,10 +1,11 @@
 package model;
-
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
-public class Location {
-    private static int compteurId = 0; 
+public class Location implements Serializable {
+    private static final long serialVersionUID = 1L; // Version de la classe pour la sérialisation
+    private static transient int compteurId = 0; 
     private int id;
     private LocalDate dateDebut;
     private LocalDate dateRetourPrevue;

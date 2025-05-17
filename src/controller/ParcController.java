@@ -10,17 +10,27 @@ import view.ScooterView;
 import java.awt.event.ActionListener;
 
 import model.Parc;
+import utils.DataManager;
 
 import java.awt.event.ActionEvent;
 
 public class ParcController implements ActionListener {
     private ParcView view;
     private Parc parc; 
+    // Initialiser le gestionnaire de données
+    DataManager dataManager = new DataManager();
 
     public ParcController(ParcView view, Parc parc) { 
         this.view = view;
         this.parc = parc;
+
+        // Charger les données dans le parc
+        parc.setClients(dataManager.getClients());
+        parc.setScooters(dataManager.getScooters());
+        parc.setMarques(dataManager.getMarques());
         initializeListeners();
+        updateResumeData();
+
     }
 
     private void initializeListeners() {
@@ -31,7 +41,7 @@ public class ParcController implements ActionListener {
         view.getGestionMarquesBtn().addActionListener(this);
         view.getGestionLocationsBtn().addActionListener(this);
         view.getGestionRetoursBtn().addActionListener(this);
-        view.getExitBtn().addActionListener(e -> System.exit(0));
+        view.getExitBtn().addActionListener(this);
     }
 
     @Override
@@ -50,6 +60,8 @@ public class ParcController implements ActionListener {
             ouvrirGestionLocations();
         } else if (e.getSource() == view.getGestionRetoursBtn()) {
             ouvrirGestionRetours();
+        } else if (e.getSource() == view.getExitBtn()) {
+            quitterProgramme();
         }
     }
 
@@ -115,4 +127,13 @@ public class ParcController implements ActionListener {
         // view.updateResume(totalScooters, scootersDisponibles, scootersEnLocation, nombreClients, kmMoyen,mdl);
         view.updateResume(totalScooters, scootersDisponibles, scootersEnLocation, nombreClients, kmMoyen);
     }
+
+    private void quitterProgramme() {
+    // Sauvegarder les données avant de quitter
+    dataManager.sauvegarderDonnees();
+    System.out.println("Données sauvegardées avec succès !");
+    
+    // Quitter le programme
+    System.exit(0);
+}
 }
