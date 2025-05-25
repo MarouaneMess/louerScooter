@@ -16,7 +16,6 @@ public class ScooterView extends JFrame {
         setTitle("Gestion des Scooters");
         setSize(700, 400);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setLocationRelativeTo(null);
 
         // Layout principal
         setLayout(new BorderLayout());

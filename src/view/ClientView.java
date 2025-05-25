@@ -16,7 +16,6 @@ public class ClientView extends JFrame {
         setTitle("Gestion des Clients");
         setSize(700, 400);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setLocationRelativeTo(null);
 
         // Layout principal
         setLayout(new BorderLayout());
@@ -52,6 +51,7 @@ public class ClientView extends JFrame {
 
         add(actionPanel, BorderLayout.SOUTH);
     }
+    
 
     // Getters pour accéder aux composants
     public JTable getClientTable() {

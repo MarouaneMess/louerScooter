@@ -58,7 +58,7 @@ public class ParcView extends JFrame {
 
         // Style des boutons
         Font buttonFont = new Font("Arial", Font.PLAIN, 12);
-        Dimension buttonSize = new Dimension(160, 30); // Taille réduite des boutons
+        Dimension buttonSize = new Dimension(160, 30); 
 
         JButton[] buttons = {
             afficherResumeBtn, gestionScootersBtn, gestionClientsBtn,
